@@ -1,5 +1,5 @@
-#ifndef PHYSICALLYBASEDRENDERER_WINDOW
-#define PHYSICALLYBASEDRENDERER_WINDOW
+#ifndef PHYSICALLYBASEDRENDERER_RENDERERWINDOW
+#define PHYSICALLYBASEDRENDERER_RENDERERWINDOW
 
 #include <string>
 
@@ -9,12 +9,16 @@
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 #include "Camera.h"
+#include "Scene.h"
 
 namespace PBR {
 
-class FailedToCreateWindowException : public std::exception { };
+class RendererWindow {
 
-class Window {
+public:
+    class FailedToCreateWindowException : public std::exception {};
+    class NoSceneLoadedException : public std::exception {};
+
 private:
     const std::string& windowTitle;
     int windowWidth;
@@ -22,13 +26,20 @@ private:
     GLFWwindow* window;
 
     Camera camera;
+    std::shared_ptr<Scene> scene;
 
 public:
-    Window(const std::string& title, int width, int height);
-    ~Window();
+    RendererWindow(const std::string& title, int width, int height);
+    ~RendererWindow();
+
+    /**
+     * Load a scene to display.
+     */
+     void loadScene(const std::shared_ptr<Scene>& scene);
 
     /**
      * Run the main application loop.
+     * Do not call unless you have loaded a scene!
      */
     void loop();
 
@@ -50,7 +61,7 @@ private:
         /**
          * Pointer to the containing window used for
          */
-        static Window* s_window;
+        static RendererWindow* s_window;
 
     public:
 
@@ -61,7 +72,7 @@ private:
         GLFWCallbackWrapper(GLFWCallbackWrapper&&) = delete;
         ~GLFWCallbackWrapper() = delete;
 
-        static void SetWindow(Window* window);
+        static void SetWindow(RendererWindow* window);
 
         static void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MousePositionCallback(GLFWwindow* window, double positionX, double positionY);
@@ -72,4 +83,4 @@ private:
 
 } // namespace PBR
 
-#endif //PHYSICALLYBASEDRENDERER_WINDOW
+#endif //PHYSICALLYBASEDRENDERER_RENDERERWINDOW

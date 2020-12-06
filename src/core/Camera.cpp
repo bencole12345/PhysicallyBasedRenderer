@@ -1,14 +1,14 @@
 #include "Camera.h"
 
-#define MOVE_SPEED 0.5
-#define ROTATION_SPEED 0.3
+#define MOVE_SPEED 1.0
+#define ROTATION_SPEED 0.7
 
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
-#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
-#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
-#include <glm/ext/scalar_constants.hpp> // glm::pi
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 namespace PBR {
 
@@ -18,25 +18,35 @@ MovingState::MovingState()
 {
 }
 
-Camera::Camera()
-        :pos(0.0f), moveSpeed(MOVE_SPEED), rotationSpeed(ROTATION_SPEED), movingState(), orientationLeftRight(0),
+Camera::Camera(glm::vec3 position)
+        :pos(position), moveSpeed(MOVE_SPEED), rotationSpeed(ROTATION_SPEED), movingState(), orientationLeftRight(0),
          orientationUpDown(0),
          fovVertical(glm::pi<float>() * 0.25f),
          aspectRatio(4.0f / 3.0f), nearDistance(0.1f), farDistance(1000.0f)
 {
 }
 
-glm::mat4 Camera::getMVPMatrix()
+glm::mat4 Camera::getViewMatrix() const
 {
-    glm::mat4 Projection = glm::perspective(fovVertical, aspectRatio, nearDistance, farDistance);
-    glm::mat4 View = glm::translate(glm::mat4(1.0f), -pos);
-    View = glm::rotate(View, orientationUpDown, glm::vec3(-1.0f, 0.0f, 0.0f));
-    View = glm::rotate(View, orientationLeftRight, glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-    return Projection * View * Model;
+    // Start with identity matrix
+    glm::mat4 view(1.0f);
+
+    // First the rotation
+    view = glm::rotate(view, orientationUpDown, glm::vec3(-1.0f, 0.0f, 0.0f));
+    view = glm::rotate(view, orientationLeftRight, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Then the translation
+    view = glm::translate(view, -pos);
+
+    return view;
 }
 
-const glm::vec3& Camera::position()
+glm::mat4 Camera::getProjectionMatrix() const
+{
+    return glm::perspective(fovVertical, aspectRatio, nearDistance, farDistance);
+}
+
+const glm::vec3& Camera::position() const
 {
     return pos;
 }

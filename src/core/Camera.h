@@ -49,11 +49,12 @@ private:
     float farDistance;
 
 public:
-    Camera();
+    explicit Camera(glm::vec3 position);
 
-    glm::mat4 getMVPMatrix();
+    glm::mat4 getViewMatrix() const;
+    glm::mat4 getProjectionMatrix() const;
 
-    const glm::vec3& position();
+    const glm::vec3& position() const;
 
     void advance(float dt);
 

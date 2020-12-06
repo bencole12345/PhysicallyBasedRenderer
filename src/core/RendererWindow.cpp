@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <functional>
 
 #define GL_SILENCE_DEPRECATION
@@ -8,29 +7,26 @@
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
-#include "Window.h"
+#include <glm/vec3.hpp>
+
+#include "RendererWindow.h"
 #include "Shader.h"
 #include "ShaderProgram.h"
-#include "SceneObject.h"
+#include "../phong/PhongSceneObject.h"
 #include "Camera.h"
 
 namespace PBR {
 
 using namespace std::placeholders;
 
-Window::Window(const std::string& title, int width, int height)
-        :windowTitle(title), windowWidth(width), windowHeight(height), camera()
+RendererWindow::RendererWindow(const std::string& title, int width, int height)
+        :windowTitle(title), windowWidth(width), windowHeight(height), camera(glm::vec3(0.0, 0.0, 5.0)), scene()
 {
     // Set up the callback wrapper
     GLFWCallbackWrapper::SetWindow(this);
 
     // Set callback for errors
     glfwSetErrorCallback(GLFWCallbackWrapper::ErrorCallback);
-
-    // Initialise the library
-    if (!glfwInit()) {
-        throw FailedToCreateWindowException();
-    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -57,26 +53,23 @@ Window::Window(const std::string& title, int width, int height)
     // Turn on the z buffer
     glEnable(GL_DEPTH_TEST);
 
-    // TODO: Turn on the setting to cull faces oriented the wrong way
+    // Cull faces that are oriented the wrong way
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT_FACE);
+    glFrontFace(GL_CCW);
 }
 
-void Window::loop()
+void RendererWindow::loadScene(const std::shared_ptr<Scene>& scene)
 {
-    // OpenGL initializations start from here
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    this->scene = scene;
+    scene->activate();
+}
 
-    // Vertex data and buffer
-    float vertices[] = {
-            -0.5f, -0.5f, -5.0f,
-            0.5f, -0.5f, -5.0f,
-            0.0f, 0.5f, -5.0f
-    };
-
-    // Set up a basic triangle scene object
-    Shader vertexShader("shaders/vertex/test.vert", GL_VERTEX_SHADER);
-    Shader fragmentShader("shaders/fragment/test.frag", GL_FRAGMENT_SHADER);
-    ShaderProgram program(vertexShader, fragmentShader);
-    SceneObject object(vertices, sizeof(vertices), program);
+void RendererWindow::loop()
+{
+    if (!scene) {
+        throw NoSceneLoadedException();
+    }
 
     double previousTime = glfwGetTime();
 
@@ -94,8 +87,8 @@ void Window::loop()
         // OpenGL Rendering related code
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Render the triangle
-        object.render(camera.getMVPMatrix());
+        // Render the scene
+        scene->render(camera, currentTime);
 
         // Swap front and back buffers
         glfwSwapBuffers(window);
@@ -110,13 +103,13 @@ void Window::loop()
     }
 }
 
-Window::~Window()
+RendererWindow::~RendererWindow()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
-void Window::keyCallback(int key, int scancode, int action, int mods)
+void RendererWindow::keyCallback(int key, int scancode, int action, int mods)
 {
     switch (key) {
 
@@ -216,20 +209,22 @@ void Window::keyCallback(int key, int scancode, int action, int mods)
         }
     } break;
 
+    default: break;
+
     }
 }
 
-void Window::mouseCallback(double positionX, double positionY)
+void RendererWindow::mouseCallback(double positionX, double positionY)
 {
     // TODO: Implement
 }
 
-void Window::frameBufferResizeCallback(GLFWwindow*, int width, int height)
+void RendererWindow::frameBufferResizeCallback(GLFWwindow*, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
-void Window::errorCallback(int error, const char* description)
+void RendererWindow::errorCallback(int error, const char* description)
 {
     std::cerr << "ERROR (code = " << error << "): " << description << std::endl;
 }
@@ -237,29 +232,29 @@ void Window::errorCallback(int error, const char* description)
 /**
  * Required to avoid a linker error
  */
-Window* Window::GLFWCallbackWrapper::s_window = nullptr;
+RendererWindow* RendererWindow::GLFWCallbackWrapper::s_window = nullptr;
 
-void Window::GLFWCallbackWrapper::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void RendererWindow::GLFWCallbackWrapper::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     s_window->keyCallback(key, scancode, action, mods);
 }
 
-void Window::GLFWCallbackWrapper::MousePositionCallback(GLFWwindow* window, double positionX, double positionY)
+void RendererWindow::GLFWCallbackWrapper::MousePositionCallback(GLFWwindow* window, double positionX, double positionY)
 {
     s_window->mouseCallback(positionX, positionY);
 }
 
-void Window::GLFWCallbackWrapper::FrameBufferResizeCallback(GLFWwindow* window, int width, int height)
+void RendererWindow::GLFWCallbackWrapper::FrameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
     s_window->frameBufferResizeCallback(window, width, height);
 }
 
-void Window::GLFWCallbackWrapper::SetWindow(Window* window)
+void RendererWindow::GLFWCallbackWrapper::SetWindow(RendererWindow* window)
 {
-    Window::GLFWCallbackWrapper::s_window = window;
+    RendererWindow::GLFWCallbackWrapper::s_window = window;
 }
 
-void Window::GLFWCallbackWrapper::ErrorCallback(int error, const char* description)
+void RendererWindow::GLFWCallbackWrapper::ErrorCallback(int error, const char* description)
 {
     s_window->errorCallback(error, description);
 }

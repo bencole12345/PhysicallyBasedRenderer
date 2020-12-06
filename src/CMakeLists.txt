@@ -7,11 +7,14 @@ find_package(glm CONFIG REQUIRED)
 
 add_executable(renderer
         main.cpp
-        Camera.cpp
-        SceneObject.cpp
-        Shader.cpp
-        ShaderProgram.cpp
-        Window.cpp)
+        core/Camera.cpp
+        core/LightSource.cpp
+        core/Scene.cpp
+        core/Shader.cpp
+        core/ShaderProgram.cpp
+        core/RendererWindow.cpp
+        phong/BasicPhongScene.cpp
+        phong/PhongSceneObject.cpp example/ExamplePhongSceneBuilder.cpp example/ExamplePhongSceneBuilder.h)
 
 if (APPLE)
     target_link_libraries(renderer
