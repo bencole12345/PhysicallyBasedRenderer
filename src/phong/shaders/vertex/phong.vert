@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec3 VertexPos;
 layout (location = 1) in vec3 Normal_modelCoords;
-layout (location = 2) in vec3 materialBaseColour;
+layout (location = 2) in vec3 MaterialColour_in;
 
 uniform mat4 Model;
 uniform mat4 View;
@@ -29,5 +29,5 @@ void main()
    Normal = Model * normal_coords;
 
    // Pass through the material colour
-   MaterialColour = materialBaseColour;
+   MaterialColour = MaterialColour_in;
 }

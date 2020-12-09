@@ -78,8 +78,8 @@ void PhongSceneObject::render(
 
     // Pass in light information
     shaderProgram->setUniform("ambientLight", glm::vec4(ambientLight, 1.0f));
-    shaderProgram->setUniform("light.position", lightPositions[0]);
-    shaderProgram->setUniform("light.colour", lightColours[0]);
+    shaderProgram->setUniform("lights.positions", lightPositions);
+    shaderProgram->setUniform("lights.colours", lightColours);
 
     // Draw the object
     glDrawArrays(GL_TRIANGLES, 0, vertexBufferLen / 9);

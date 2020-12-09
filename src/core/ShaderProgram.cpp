@@ -72,4 +72,10 @@ void ShaderProgram::setUniform(const std::string& name, const glm::mat4& matrix)
     glUniformMatrix4fv(position, 1, GL_FALSE, &matrix[0][0]);
 }
 
+void ShaderProgram::setUniform(const std::string& name, std::vector<glm::vec3> values)
+{
+    int position = glGetUniformLocation(shaderProgramId, name.c_str());
+    glUniform3fv(position, values.size(), reinterpret_cast<const GLfloat*>(&values[0]));
+}
+
 } // namespace PBR

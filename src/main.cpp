@@ -11,7 +11,7 @@
 #include "phong/BasicPhongScene.h"
 #include "example/ExamplePhongSceneBuilder.h"
 
-int main(int argc, char **argv)
+int main()
 {
     std::string title = "Physically-Based Renderer";
     int width = 640;

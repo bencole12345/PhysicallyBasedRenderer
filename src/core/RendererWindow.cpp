@@ -10,10 +10,6 @@
 #include <glm/vec3.hpp>
 
 #include "RendererWindow.h"
-#include "Shader.h"
-#include "ShaderProgram.h"
-#include "../phong/PhongSceneObject.h"
-#include "Camera.h"
 
 namespace PBR {
 
@@ -216,7 +212,6 @@ void RendererWindow::keyCallback(int key, int scancode, int action, int mods)
 
 void RendererWindow::mouseCallback(double positionX, double positionY)
 {
-    // TODO: Implement
 }
 
 void RendererWindow::frameBufferResizeCallback(GLFWwindow*, int width, int height)

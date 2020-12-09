@@ -2,12 +2,11 @@
 
 #include <memory>
 
-#include <glm/vec4.hpp>
-
 namespace PBR {
 
 static float cubeVertices[] = {
         // Position(x, y, z), Normal(x, y, z), Colour(r, g, b)
+
         0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
         0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
@@ -52,6 +51,8 @@ static float cubeVertices[] = {
 };
 
 static float planeVertices[] = {
+        // Position(x, y, z), Normal(x, y, z), Colour(r, g, b)
+
         10.0f, -2.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
         10.0f, -2.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
         -10.0f, -2.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
@@ -80,7 +81,8 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<BasicPhongSce
     kD = 0.8f;
     kS = 0.2f;
     specularN = 1.0f;
-    std::shared_ptr<PhongSceneObject> plane(new PhongSceneObject(planeVertices, sizeof(planeVertices), shaderProgram, kD, kS, specularN));
+    std::shared_ptr<PhongSceneObject> plane(
+            new PhongSceneObject(planeVertices, sizeof(planeVertices), shaderProgram, kD, kS, specularN));
 
     // Scene colour information
     glm::vec3 backgroundColour(0.0f, 0.0f, 0.0f);
@@ -93,11 +95,16 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<BasicPhongSce
     (*scene)->addSceneObject(triangle);
     (*scene)->addSceneObject(plane);
 
-    // Add a light source
+    // Add a light source (below, to the right)
     glm::vec3 lightPosition(2.0f, -1.0f, 2.0f);
     glm::vec3 lightColour(1.0f, 1.0f, 1.0f);
     std::shared_ptr<LightSource> light(new LightSource(lightPosition, lightColour));
     (*scene)->addLightSource(light);
+
+    // Add a second light source (above, slightly to the left and behind)
+    lightPosition = glm::vec3(-1.0f, 5.0f, -1.0f);
+    std::shared_ptr<LightSource> light2(new LightSource(lightPosition, lightColour));
+    (*scene)->addLightSource(light2);
 }
 
-}; // namespace PBR
+} // namespace PBR

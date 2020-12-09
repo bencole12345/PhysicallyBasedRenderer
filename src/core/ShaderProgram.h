@@ -29,6 +29,7 @@ public:
     void setUniform(const std::string& name, glm::vec3 value);
     void setUniform(const std::string& name, glm::vec4 value);
     void setUniform(const std::string& name, const glm::mat4& matrix);
+    void setUniform(const std::string& name, std::vector<glm::vec3> values);
 };
 
 } // namespace PBR
