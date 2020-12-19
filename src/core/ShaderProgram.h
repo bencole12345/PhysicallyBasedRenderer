@@ -7,29 +7,27 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-#include "Shader.h"
-
 namespace PBR {
 
+/**
+ * Wraps a shader program containing a vertex and fragment shader.
+ */
 class ShaderProgram {
 private:
     const unsigned int shaderProgramId;
 
-    std::shared_ptr<Shader> vertexShader;
-    std::shared_ptr<Shader> fragmentShader;
-
 public:
-    ShaderProgram(const std::shared_ptr<Shader>& vertexShader, const std::shared_ptr<Shader>& fragmentShader);
+    ShaderProgram(const std::string& vertexShaderLocation, const std::string& fragmentShaderLocation);
     ~ShaderProgram();
 
     unsigned int id() const;
 
     void setUniform(const std::string& name, float value);
     void setUniform(const std::string& name, double value);
-    void setUniform(const std::string& name, glm::vec3 value);
-    void setUniform(const std::string& name, glm::vec4 value);
+    void setUniform(const std::string& name, const glm::vec3& value);
+    void setUniform(const std::string& name, const glm::vec4& value);
     void setUniform(const std::string& name, const glm::mat4& matrix);
-    void setUniform(const std::string& name, std::vector<glm::vec3> values);
+    void setUniform(const std::string& name, const std::vector<glm::vec3>& values);
 };
 
 } // namespace PBR

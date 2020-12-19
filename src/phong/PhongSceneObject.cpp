@@ -1,5 +1,7 @@
 #include "PhongSceneObject.h"
 
+#include <string>
+
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
 
@@ -11,7 +13,6 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <utility>
 
 namespace PBR {
 

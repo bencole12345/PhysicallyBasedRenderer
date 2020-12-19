@@ -10,7 +10,6 @@ add_executable(renderer
         core/Camera.cpp
         core/LightSource.cpp
         core/Scene.cpp
-        core/Shader.cpp
         core/ShaderProgram.cpp
         core/RendererWindow.cpp
         phong/BasicPhongScene.cpp

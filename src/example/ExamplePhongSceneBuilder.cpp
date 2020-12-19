@@ -1,6 +1,7 @@
 #include "ExamplePhongSceneBuilder.h"
 
 #include <memory>
+#include <string>
 
 namespace PBR {
 
@@ -65,8 +66,8 @@ static float planeVertices[] = {
 void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<BasicPhongScene>* scene)
 {
     // Set up a shader program for the triangles
-    std::shared_ptr<Shader> vertexShader(new Shader("src/phong/shaders/vertex/phong.vert", GL_VERTEX_SHADER));
-    std::shared_ptr<Shader> fragmentShader(new Shader("src/phong/shaders/fragment/phong.frag", GL_FRAGMENT_SHADER));
+    const std::string vertexShader = "src/phong/shaders/vertex/phong.vert";
+    const std::string fragmentShader = "src/phong/shaders/fragment/phong.frag";
     std::shared_ptr<ShaderProgram> shaderProgram(new ShaderProgram(vertexShader, fragmentShader));
 
     // Create the cube

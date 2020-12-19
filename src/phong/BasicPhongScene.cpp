@@ -1,5 +1,11 @@
 #include "BasicPhongScene.h"
 
+#define GL_SILENCE_DEPRECATION
+#define GLFW_INCLUDE_NONE
+
+#include <GLFW/glfw3.h>
+#include <OpenGL/gl3.h>
+
 namespace PBR {
 
 BasicPhongScene::BasicPhongScene(
