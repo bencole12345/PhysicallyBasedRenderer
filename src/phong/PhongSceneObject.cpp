@@ -1,6 +1,7 @@
 #include "PhongSceneObject.h"
 
 #include <string>
+#include <memory>
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
@@ -15,6 +16,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace PBR {
+namespace phong {
 
 PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBufferLen,
         std::shared_ptr<ShaderProgram> shaderProgram, float kD, float kS, float specularN)
@@ -92,4 +94,5 @@ glm::mat4 PhongSceneObject::getModelMatrix()
     return identity;
 }
 
+} // namespace phong
 } // namespace PBR

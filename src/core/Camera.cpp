@@ -1,8 +1,5 @@
 #include "Camera.h"
 
-#define MOVE_SPEED 1.0
-#define ROTATION_SPEED 0.7
-
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
@@ -12,16 +9,8 @@
 
 namespace PBR {
 
-MovingState::MovingState()
-        :movingForwards(false), movingBackwards(false), movingLeft(false), movingRight(false), movingUp(false),
-         movingDown(false), rotatingUp(false), rotatingDown(false), rotatingLeft(false), rotatingRight(false)
-{
-}
-
 Camera::Camera(glm::vec3 position)
-        :pos(position), moveSpeed(MOVE_SPEED), rotationSpeed(ROTATION_SPEED), movingState(), orientationLeftRight(0),
-         orientationUpDown(0),
-         fovVertical(glm::pi<float>() * 0.25f),
+        :pos(position), orientationLeftRight(0), orientationUpDown(0), fovVertical(glm::pi<float>() * 0.25f),
          aspectRatio(4.0f / 3.0f), nearDistance(0.1f), farDistance(1000.0f)
 {
 }
@@ -51,63 +40,83 @@ const glm::vec3& Camera::position() const
     return pos;
 }
 
-void Camera::advance(float dt)
+void Camera::moveForwards(float distance)
+{
+    pos += distance * forwardsVector();
+}
+
+void Camera::moveBackwards(float distance)
+{
+    pos -= distance * forwardsVector();
+}
+
+void Camera::moveLeft(float distance)
+{
+    pos -= distance * rightVector();
+}
+
+void Camera::moveRight(float distance)
+{
+    pos += distance * rightVector();
+}
+
+void Camera::moveUp(float distance)
+{
+    pos += distance * upVector();
+}
+
+void Camera::moveDown(float distance)
+{
+    pos -= distance * upVector();
+}
+
+void Camera::rotateLeft(float angle)
+{
+    orientationLeftRight = glm::mod(orientationLeftRight - angle, 2.0f * glm::pi<float>());
+}
+
+void Camera::rotateRight(float angle)
+{
+    orientationLeftRight = glm::mod(orientationLeftRight + angle, 2.0f * glm::pi<float>());
+}
+
+void Camera::rotateUp(float angle)
+{
+    orientationUpDown = glm::mod(orientationUpDown + angle, 2.0f * glm::pi<float>());
+}
+
+void Camera::rotateDown(float angle)
+{
+    orientationUpDown = glm::mod(orientationUpDown - angle, 2.0f * glm::pi<float>());
+}
+
+glm::mat4 Camera::rotationMatrix() const
 {
     glm::mat4 identity(1.0f);
     glm::mat4 rotatedUpDown = glm::rotate(identity, orientationUpDown, glm::vec3(1.0f, 0.0f, 0.0f));
     glm::mat4 fullRotation = glm::rotate(rotatedUpDown, orientationLeftRight, glm::vec3(0.0f, -1.0f, 0.0f));
+    return fullRotation;
+}
 
-    glm::vec4 forwards = fullRotation * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
-    glm::vec4 up = fullRotation * glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-    glm::vec4 right = fullRotation * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+glm::vec3 Camera::forwardsVector() const
+{
+    glm::vec4 forwardsBeforeRotation(0.0f, 0.0f, -1.0f, 1.0f);
+    glm::vec4 rotated = rotationMatrix() * forwardsBeforeRotation;
+    return glm::vec3(rotated.x, rotated.y, rotated.z);
+}
 
-    glm::vec4 posHomogenous(pos, 1.0f);
+glm::vec3 Camera::rightVector() const
+{
+    glm::vec4 rightBeforeRotation(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::vec4 rotated = rotationMatrix() * rightBeforeRotation;
+    return glm::vec3(rotated.x, rotated.y, rotated.z);
+}
 
-    if (movingState.movingForwards) {
-        posHomogenous += moveSpeed * dt * forwards;
-    }
-
-    if (movingState.movingBackwards) {
-        posHomogenous -= moveSpeed * dt * forwards;
-    }
-
-    if (movingState.movingLeft) {
-        posHomogenous -= moveSpeed * dt * right;
-    }
-
-    if (movingState.movingRight) {
-        posHomogenous += moveSpeed * dt * right;
-    }
-
-    if (movingState.movingUp) {
-        posHomogenous += moveSpeed * dt * up;
-    }
-
-    if (movingState.movingDown) {
-        posHomogenous -= moveSpeed * dt * up;
-    }
-
-    pos[0] = posHomogenous[0];
-    pos[1] = posHomogenous[1];
-    pos[2] = posHomogenous[2];
-
-    float orientationDiff = dt * rotationSpeed;
-
-    if (movingState.rotatingLeft) {
-        orientationLeftRight = glm::mod(orientationLeftRight - orientationDiff, 2.0f * glm::pi<float>());
-    }
-
-    if (movingState.rotatingRight) {
-        orientationLeftRight = glm::mod(orientationLeftRight + orientationDiff, 2.0f * glm::pi<float>());
-    }
-
-    if (movingState.rotatingUp) {
-        orientationUpDown = glm::mod(orientationUpDown + orientationDiff, 2.0f * glm::pi<float>());
-    }
-
-    if (movingState.rotatingDown) {
-        orientationUpDown = glm::mod(orientationUpDown - orientationDiff, 2.0f * glm::pi<float>());
-    }
+glm::vec3 Camera::upVector() const
+{
+    glm::vec4 upBeforeRotation(0.0f, 1.0f, 0.0f, 1.0f);
+    glm::vec4 rotated = rotationMatrix() * upBeforeRotation;
+    return glm::vec3(rotated.x, rotated.y, rotated.z);
 }
 
 } // namespace PBR

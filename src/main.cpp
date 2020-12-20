@@ -7,9 +7,13 @@
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
-#include "core/RendererWindow.h"
-#include "phong/BasicPhongScene.h"
+#include "core/Renderer.h"
+#include "core/Window.h"
 #include "example/ExamplePhongSceneBuilder.h"
+#include "phong/PhongRenderer.h"
+#include "phong/PhongScene.h"
+
+using namespace PBR;
 
 int main()
 {
@@ -23,17 +27,17 @@ int main()
     }
 
     // Create a window
-    PBR::RendererWindow window(title, width, height);
+    Window window(title, width, height);
 
     // Create a scene
-    std::shared_ptr<PBR::BasicPhongScene> scene;
-    PBR::ExamplePhongSceneBuilder::loadBasicPhongScene(&scene);
+    std::shared_ptr<phong::PhongScene> scene;
+    ExamplePhongSceneBuilder::loadBasicPhongScene(&scene);
 
-    // Load the scene
-    window.loadScene(scene);
+    // Create a renderer
+    std::shared_ptr<Renderer> renderer(new phong::PhongRenderer(scene));
 
     // Run the main loop
-    window.loop();
+    window.loopUntilClosed(renderer);
 
     return 0;
 }

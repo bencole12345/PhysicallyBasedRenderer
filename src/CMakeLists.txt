@@ -5,15 +5,20 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
+include_directories(${PROJECT_SOURCE_DIR})
+
 add_executable(renderer
         main.cpp
         core/Camera.cpp
-        core/LightSource.cpp
-        core/Scene.cpp
+        core/PointLightSource.cpp
+        core/Renderer.cpp
+        core/RendererDriver.cpp
         core/ShaderProgram.cpp
-        core/RendererWindow.cpp
-        phong/BasicPhongScene.cpp
-        phong/PhongSceneObject.cpp example/ExamplePhongSceneBuilder.cpp example/ExamplePhongSceneBuilder.h)
+        core/Window.cpp
+        example/ExamplePhongSceneBuilder.cpp
+        phong/PhongRenderer.cpp
+        phong/PhongScene.cpp
+        phong/PhongSceneObject.cpp)
 
 if (APPLE)
     target_link_libraries(renderer

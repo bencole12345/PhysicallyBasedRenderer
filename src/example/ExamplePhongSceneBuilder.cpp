@@ -3,7 +3,14 @@
 #include <memory>
 #include <string>
 
+#include "core/PointLightSource.h"
+#include "core/ShaderProgram.h"
+#include "phong/PhongScene.h"
+#include "phong/PhongSceneObject.h"
+
 namespace PBR {
+
+using namespace phong;
 
 static float cubeVertices[] = {
         // Position(x, y, z), Normal(x, y, z), Colour(r, g, b)
@@ -63,7 +70,7 @@ static float planeVertices[] = {
         -10.0f, -2.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
 };
 
-void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<BasicPhongScene>* scene)
+void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<PhongScene>* scene)
 {
     // Set up a shader program for the triangles
     const std::string vertexShader = "src/phong/shaders/vertex/phong.vert";
@@ -90,7 +97,7 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<BasicPhongSce
     glm::vec3 ambientLight(0.2f, 0.2f, 0.3f);
 
     // Allocate the scene
-    *scene = std::make_shared<BasicPhongScene>(backgroundColour, ambientLight);
+    *scene = std::make_shared<PhongScene>(backgroundColour, ambientLight);
 
     // Add the scene objects
     (*scene)->addSceneObject(triangle);
@@ -99,12 +106,12 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<BasicPhongSce
     // Add a light source (below, to the right)
     glm::vec3 lightPosition(2.0f, -1.0f, 2.0f);
     glm::vec3 lightColour(1.0f, 1.0f, 1.0f);
-    std::shared_ptr<LightSource> light(new LightSource(lightPosition, lightColour));
+    std::shared_ptr<PointLightSource> light(new PointLightSource(lightPosition, lightColour));
     (*scene)->addLightSource(light);
 
     // Add a second light source (above, slightly to the left and behind)
     lightPosition = glm::vec3(-1.0f, 5.0f, -1.0f);
-    std::shared_ptr<LightSource> light2(new LightSource(lightPosition, lightColour));
+    std::shared_ptr<PointLightSource> light2(new PointLightSource(lightPosition, lightColour));
     (*scene)->addLightSource(light2);
 }
 

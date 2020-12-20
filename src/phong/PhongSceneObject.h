@@ -1,16 +1,26 @@
 #ifndef PHYSICALLYBASEDRENDERER_PHONGSCENEOBJECT
 #define PHYSICALLYBASEDRENDERER_PHONGSCENEOBJECT
 
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
+#include <memory>
 #include <vector>
 
-#include "../core/ShaderProgram.h"
-#include "../core/Camera.h"
-#include "../core/LightSource.h"
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+
+#include "core/ShaderProgram.h"
+#include "core/Camera.h"
+#include "core/PointLightSource.h"
 
 namespace PBR {
+namespace phong {
 
+/**
+ * Represents an object in a Phong scene.
+ *
+ * Consists of a list of vertices and information about the material.
+ *
+ * TODO: Support setting position and orientation of the object
+ */
 class PhongSceneObject {
 
 private:
@@ -49,6 +59,7 @@ private:
     glm::mat4 getModelMatrix();
 };
 
+} // namespace phong
 } // namespace PBR
 
 #endif //PHYSICALLYBASEDRENDERER_PHONGSCENEOBJECT

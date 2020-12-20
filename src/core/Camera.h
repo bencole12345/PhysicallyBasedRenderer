@@ -7,28 +7,9 @@
 namespace PBR {
 
 /**
- * Wraps all flags for whether we are currently moving.
+ * A camera at some position and orientation in world space,
+ * capable of producing view and projection matrices.
  */
-struct MovingState {
-
-    // Movement
-    int movingForwards : 1;
-    int movingBackwards : 1;
-    int movingLeft : 1;
-    int movingRight : 1;
-    int movingUp : 1;
-    int movingDown : 1;
-
-    // Rotation
-    int rotatingUp : 1;
-    int rotatingDown : 1;
-    int rotatingLeft : 1;
-    int rotatingRight : 1;
-
-    // Default constructor to initialise everything to zero
-    MovingState();
-};
-
 class Camera {
 private:
 
@@ -37,12 +18,7 @@ private:
     float orientationLeftRight;
     float orientationUpDown;
 
-    // Movement
-    float moveSpeed;
-    float rotationSpeed;
-    MovingState movingState;
-
-    // Camera settings
+    // Camera parameters
     float fovVertical;
     float aspectRatio;
     float nearDistance;
@@ -51,85 +27,56 @@ private:
 public:
     explicit Camera(glm::vec3 position);
 
+    /**
+     * Computes the view matrix of the camera.
+     */
     glm::mat4 getViewMatrix() const;
+
+    /**
+     * Computes the projection matrix of the camera.
+     */
     glm::mat4 getProjectionMatrix() const;
 
+    /**
+     * The current position of the camera.
+     */
     const glm::vec3& position() const;
 
-    void advance(float dt);
+    void moveForwards(float distance);
+    void moveBackwards(float distance);
+    void moveLeft(float distance);
+    void moveRight(float distance);
+    void moveUp(float distance);
+    void moveDown(float distance);
 
-    void setMovingForwards(bool movingForwards);
-    void setMovingBackwards(bool movingBackwards);
-    void setMovingLeft(bool movingLeft);
-    void setMovingRight(bool movingRight);
-    void setMovingUp(bool movingUp);
-    void setMovingDown(bool movingDown);
+    void rotateLeft(float angle);
+    void rotateRight(float angle);
+    void rotateUp(float angle);
+    void rotateDown(float angle);
 
-    void setRotatingUp(bool rotatingUp);
-    void setRotatingDown(bool rotatingDown);
-    void setRotatingLeft(bool rotatingLeft);
-    void setRotatingRight(bool rotatingRight);
+private:
+
+    /**
+     * Computes the rotation matrix for the camera's current orientation.
+     */
+    glm::mat4 rotationMatrix() const;
+
+    /**
+     * Computes the 'forwards' vector relative to the camera's orientation.
+     */
+    glm::vec3 forwardsVector() const;
+
+    /**
+     * Computes the 'up' vector relative to the camera's orientation.
+     */
+    glm::vec3 upVector() const;
+
+    /**
+     * Computes the 'right' vector relative to the camera's orientation.
+     * @return
+     */
+    glm::vec3 rightVector() const;
 };
-
-inline
-void Camera::setMovingForwards(bool movingForwards)
-{
-    this->movingState.movingForwards = movingForwards;
-}
-
-inline
-void Camera::setMovingBackwards(bool movingBackwards)
-{
-    this->movingState.movingBackwards = movingBackwards;
-}
-
-inline
-void Camera::setMovingLeft(bool movingLeft)
-{
-    this->movingState.movingLeft = movingLeft;
-}
-
-inline
-void Camera::setMovingRight(bool movingRight)
-{
-    this->movingState.movingRight = movingRight;
-}
-
-inline
-void Camera::setMovingUp(bool movingUp)
-{
-    this->movingState.movingUp = movingUp;
-}
-
-inline
-void Camera::setMovingDown(bool movingDown)
-{
-    this->movingState.movingDown = movingDown;
-}
-
-inline
-void Camera::setRotatingUp(bool rotatingUp)
-{
-    this->movingState.rotatingUp = rotatingUp;
-}
-
-inline
-void Camera::setRotatingDown(bool rotatingDown)
-{
-    this->movingState.rotatingDown = rotatingDown;
-}
-
-inline
-void Camera::setRotatingLeft(bool rotatingLeft)
-{
-    this->movingState.rotatingLeft = rotatingLeft;
-}
-
-inline
-void Camera::setRotatingRight(bool rotatingRight)
-{
-    this->movingState.rotatingRight = rotatingRight;
-}
 
 } // namespace PBR
 

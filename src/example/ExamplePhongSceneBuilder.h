@@ -1,12 +1,14 @@
 #ifndef PHYSICALLYBASEDRENDERER_EXAMPLEPHONGSCENEBUILDER
 #define PHYSICALLYBASEDRENDERER_EXAMPLEPHONGSCENEBUILDER
 
-#include "../phong/BasicPhongScene.h"
+#include <memory>
+
+#include "phong/PhongScene.h"
 
 namespace PBR {
 
 struct ExamplePhongSceneBuilder {
-    static void loadBasicPhongScene(std::shared_ptr<BasicPhongScene> *scene);
+    static void loadBasicPhongScene(std::shared_ptr<phong::PhongScene> *scene);
 };
 
 } // namespace PBR
