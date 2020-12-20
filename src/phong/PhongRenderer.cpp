@@ -1,4 +1,4 @@
-#include "PhongRenderer.h"
+#include "phong/PhongRenderer.h"
 
 #include <utility>
 

@@ -1,4 +1,4 @@
-#include "PhongScene.h"
+#include "phong/PhongScene.h"
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE

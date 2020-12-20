@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "Camera.h"
-#include "Renderer.h"
+#include "core/Renderer.h"
 
 namespace PBR {
 

@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "core/Camera.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

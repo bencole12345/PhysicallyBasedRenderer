@@ -1,4 +1,4 @@
-#include "ExamplePhongSceneBuilder.h"
+#include "example/ExamplePhongSceneBuilder.h"
 
 #include <memory>
 #include <string>

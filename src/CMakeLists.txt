@@ -5,8 +5,6 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
-include_directories(${PROJECT_SOURCE_DIR})
-
 add_executable(renderer
         main.cpp
         core/Camera.cpp

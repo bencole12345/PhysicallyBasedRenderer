@@ -1,4 +1,4 @@
-#include "PointLightSource.h"
+#include "core/PointLightSource.h"
 
 #include <glm/vec3.hpp>
 

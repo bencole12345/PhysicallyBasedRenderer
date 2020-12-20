@@ -1,4 +1,4 @@
-#include "PhongSceneObject.h"
+#include "phong/PhongSceneObject.h"
 
 #include <string>
 #include <memory>

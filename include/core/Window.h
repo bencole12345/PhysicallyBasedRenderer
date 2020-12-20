@@ -11,8 +11,8 @@
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
-#include "Renderer.h"
-#include "RendererDriver.h"
+#include "core/Renderer.h"
+#include "core/RendererDriver.h"
 
 namespace PBR {
 
