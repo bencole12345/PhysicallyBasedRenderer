@@ -9,10 +9,15 @@
 
 namespace PBR {
 
-Camera::Camera(glm::vec3 position)
+Camera::Camera(glm::vec3 position, float aspectRatio)
         :pos(position), orientationLeftRight(0), orientationUpDown(0), fovVertical(glm::pi<float>() * 0.25f),
-         aspectRatio(4.0f / 3.0f), nearDistance(0.1f), farDistance(1000.0f)
+         aspectRatio(aspectRatio), nearDistance(0.1f), farDistance(1000.0f)
 {
+}
+
+void Camera::setAspectRatio(float aspectRatio)
+{
+    this->aspectRatio = aspectRatio;
 }
 
 glm::mat4 Camera::getViewMatrix() const

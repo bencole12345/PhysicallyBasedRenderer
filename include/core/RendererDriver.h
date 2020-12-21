@@ -44,7 +44,9 @@ private:
     std::shared_ptr<Renderer> renderer;
 
 public:
-    explicit RendererDriver(std::shared_ptr<Renderer> renderer);
+    RendererDriver(std::shared_ptr<Renderer> renderer, float aspectRatio);
+
+    void setAspectRatio(float aspectRatio);
 
     /**
      * Update the state for a new frame.

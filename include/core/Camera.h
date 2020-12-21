@@ -25,7 +25,12 @@ private:
     float farDistance;
 
 public:
-    explicit Camera(glm::vec3 position);
+    Camera(glm::vec3 position, float aspectRatio);
+
+    /**
+     * Sets the aspect ratio for rendering. (width / height)
+     */
+    void setAspectRatio(float aspectRatio);
 
     /**
      * Computes the view matrix of the camera.

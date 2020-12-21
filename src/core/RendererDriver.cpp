@@ -22,10 +22,15 @@ MovementState::MovementState()
 {
 }
 
-RendererDriver::RendererDriver(std::shared_ptr<Renderer> renderer)
-        :camera(glm::vec3(0.0, 0.0, 5.0)), movementState(), moveSpeed(DEFAULT_MOVE_SPEED),
+RendererDriver::RendererDriver(std::shared_ptr<Renderer> renderer, float aspectRatio)
+        :camera(glm::vec3(0.0, 0.0, 5.0), aspectRatio), movementState(), moveSpeed(DEFAULT_MOVE_SPEED),
          turnSpeed(DEFAULT_TURN_SPEED), renderer(std::move(renderer))
 {
+}
+
+void RendererDriver::setAspectRatio(float aspectRatio)
+{
+    camera.setAspectRatio(aspectRatio);
 }
 
 void RendererDriver::update(float dt)

@@ -58,7 +58,12 @@ Window::~Window()
 
 void Window::loopUntilClosed(std::shared_ptr<Renderer> renderer)
 {
-    RendererDriver driver(std::move(renderer));
+    // Compute aspect ratio
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    float aspectRatio = (float)width / (float)height;
+
+    RendererDriver driver(std::move(renderer), aspectRatio);
     GLFWCallbackWrapper::bindRendererDriver(&driver);
 
     double previousTime = glfwGetTime();
@@ -129,7 +134,12 @@ void Window::GLFWCallbackWrapper::keyboardCallback(GLFWwindow*, int key, int sca
 
 void Window::GLFWCallbackWrapper::frameBufferResizeCallback(GLFWwindow*, int width, int height)
 {
+    assert(s_rendererDriver);
+
     glViewport(0, 0, width, height);
+
+    float aspectRatio = (float)width / (float)height;
+    s_rendererDriver->setAspectRatio(aspectRatio);
 }
 
 void Window::GLFWCallbackWrapper::errorCallback(int error, const char* description)
