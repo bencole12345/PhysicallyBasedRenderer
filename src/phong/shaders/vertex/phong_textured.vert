@@ -1,8 +1,10 @@
 #version 410
 
+// TODO: Find a way to embed this into the binary
+
 layout (location = 0) in vec3 VertexPos;
 layout (location = 1) in vec3 Normal_modelCoords;
-layout (location = 2) in vec3 MaterialColour_in;
+layout (location = 2) in vec2 TexCoord_in;
 
 uniform mat4 Model;
 uniform mat4 View;
@@ -11,7 +13,7 @@ uniform double time;
 
 out vec4 Normal;
 out vec4 Position_world;
-out vec3 MaterialColour;
+out vec2 TexCoord;
 
 void main()
 {
@@ -22,12 +24,12 @@ void main()
    // Compute the world position of this vertex
    Position_world = Model * model_coords;
 
-   // Compute the projected onscreen position of this vertex
-   gl_Position = Projection * View * Model * model_coords;
-
    // Rotate the normal of this vertex into world space
    Normal = Model * normal_coords;
 
-   // Pass through the material colour
-   MaterialColour = MaterialColour_in;
+   // Pass through the texture coordinates
+   TexCoord = TexCoord_in;
+
+   // Compute the projected onscreen position of this vertex
+   gl_Position = Projection * View * Model * model_coords;
 }

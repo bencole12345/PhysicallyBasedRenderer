@@ -4,6 +4,7 @@ project(PhysicallyBasedRenderer)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb.h")
 
 add_executable(renderer
         main.cpp
@@ -12,11 +13,14 @@ add_executable(renderer
         core/Renderer.cpp
         core/RendererDriver.cpp
         core/ShaderProgram.cpp
+        core/Texture.cpp
         core/Window.cpp
         example/ExamplePhongSceneBuilder.cpp
         phong/PhongRenderer.cpp
         phong/PhongScene.cpp
         phong/PhongSceneObject.cpp)
+
+target_include_directories(renderer PRIVATE ${STB_INCLUDE_DIRS})
 
 if (APPLE)
     target_link_libraries(renderer

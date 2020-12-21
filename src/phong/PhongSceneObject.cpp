@@ -21,7 +21,22 @@ namespace phong {
 PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBufferLen,
         std::shared_ptr<ShaderProgram> shaderProgram, float kD, float kS, float specularN)
         :shaderProgram(std::move(shaderProgram)), kD(kD), kS(kS), specularN(specularN),
-         vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId()
+         vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId(),
+         hasTexture(false), texture({})
+{
+    initBuffers();
+}
+
+PhongSceneObject::PhongSceneObject(const float* vertices, size_t vertexBufferLen, std::shared_ptr<Texture> texture,
+        std::shared_ptr<ShaderProgram> shaderProgram, float kD, float kS, float specularN)
+        :shaderProgram(std::move(shaderProgram)), kD(kD), kS(kS), specularN(specularN),
+         vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId(),
+         hasTexture(true), texture(texture)
+{
+    initBuffers();
+}
+
+void PhongSceneObject::initBuffers()
 {
     // The vertex array object
     glGenVertexArrays(1, &vaoId);
@@ -32,8 +47,8 @@ PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBuf
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
     glBufferData(GL_ARRAY_BUFFER, vertexBufferLen, vertices, GL_STATIC_DRAW);
 
-    // Binding the buffers
-    size_t stride = 9 * sizeof(float);  // 3 (vertex positions) + 3 (normals) + 3 (colours)
+    // Bind the buffers
+    size_t stride = vertexBufferStrideLength();
 
     // Vertex positions
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) 0);
@@ -43,10 +58,19 @@ PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBuf
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Vertex colours
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*) (6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    if (hasTexture) {
+        // Texture coordinates
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*) (6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    }
+    else {
+        // Vertex colours
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*) (6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    }
 }
+
+// TODO: Add destructor that deletes the buffers we created
 
 void PhongSceneObject::render(
         const Camera& camera,
@@ -59,6 +83,13 @@ void PhongSceneObject::render(
 
     // Bind the array of vertex positions
     glBindVertexArray(vaoId);
+
+    // Bind the texture, if this object has one
+    if (hasTexture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, (*texture)->id());
+        glUniform1i(glGetUniformLocation(shaderProgram->id(), "myTexture"), 0);
+    }
 
     // Compute the matrices we need to pass to the shader program
     const glm::mat4 modelMatrix = getModelMatrix();
@@ -85,13 +116,26 @@ void PhongSceneObject::render(
     shaderProgram->setUniform("lights.colours", lightColours);
 
     // Draw the object
-    glDrawArrays(GL_TRIANGLES, 0, vertexBufferLen / 9);
+    size_t stride = vertexBufferStrideLength();
+    glDrawArrays(GL_TRIANGLES, 0, vertexBufferLen / stride);
 }
 
 glm::mat4 PhongSceneObject::getModelMatrix()
 {
     glm::mat4 identity(1.0f);
     return identity;
+}
+
+size_t PhongSceneObject::vertexBufferStrideLength() const
+{
+    if (hasTexture) {
+        // 3 (positions) + 3 (normals) + 2 (texture coordinates)
+        return 8 * sizeof(float);
+    }
+    else {
+        // 3 (positions) + 3 (normals) + 3 (colours)
+        return 9 * sizeof(float);
+    }
 }
 
 } // namespace phong
