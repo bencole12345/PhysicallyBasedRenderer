@@ -119,9 +119,7 @@ glm::vec3 Camera::rightVector() const
 
 glm::vec3 Camera::upVector() const
 {
-    glm::vec4 upBeforeRotation(0.0f, 1.0f, 0.0f, 1.0f);
-    glm::vec4 rotated = rotationMatrix() * upBeforeRotation;
-    return glm::vec3(rotated.x, rotated.y, rotated.z);
+    return glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
 } // namespace PBR
