@@ -22,7 +22,7 @@ void main()
    vec4 normal_coords = vec4(Normal_modelCoords, 1.0);
 
    // Compute the world position of this vertex
-   Position_world = Model * model_coords;
+   Position_world = inverse(transpose(Model)) * model_coords;
 
    // Compute the projected onscreen position of this vertex
    gl_Position = Projection * View * Model * model_coords;

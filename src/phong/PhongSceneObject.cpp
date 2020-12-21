@@ -10,6 +10,7 @@
 #include <OpenGL/gl3.h>
 
 #include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
@@ -19,8 +20,8 @@ namespace PBR {
 namespace phong {
 
 PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBufferLen,
-        std::shared_ptr<ShaderProgram> shaderProgram, float kD, float kS, float specularN)
-        :shaderProgram(std::move(shaderProgram)), kD(kD), kS(kS), specularN(specularN),
+        std::shared_ptr<ShaderProgram> shaderProgram, glm::vec3 pos, glm::vec3 orientation, float scale, float kD, float kS, float specularN)
+        :shaderProgram(std::move(shaderProgram)), pos(pos), orientation(orientation), scale(scale), kD(kD), kS(kS), specularN(specularN),
          vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId(),
          hasTexture(false), texture({})
 {
@@ -28,8 +29,8 @@ PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBuf
 }
 
 PhongSceneObject::PhongSceneObject(const float* vertices, size_t vertexBufferLen, std::shared_ptr<Texture> texture,
-        std::shared_ptr<ShaderProgram> shaderProgram, float kD, float kS, float specularN)
-        :shaderProgram(std::move(shaderProgram)), kD(kD), kS(kS), specularN(specularN),
+        std::shared_ptr<ShaderProgram> shaderProgram, glm::vec3 pos, glm::vec3 orientation, float scale, float kD, float kS, float specularN)
+        :shaderProgram(std::move(shaderProgram)), pos(pos), orientation(orientation), scale(scale), kD(kD), kS(kS), specularN(specularN),
          vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId(),
          hasTexture(true), texture(texture)
 {
@@ -122,8 +123,24 @@ void PhongSceneObject::render(
 
 glm::mat4 PhongSceneObject::getModelMatrix()
 {
+    // Remember that these are essentially in reverse order. We start with
+    // an identity matrix and apply the transformations to it in
+    // last-to-first order.
+
     glm::mat4 identity(1.0f);
-    return identity;
+
+    // Last do the translation
+    auto translated = glm::translate(identity, pos);
+
+    // Before that, apply the scaling, uniformly in all dimensions.
+    auto scaled = glm::scale(translated, glm::vec3(scale));
+
+    // First we do the rotations.
+    auto rotatedZ = glm::rotate(scaled, orientation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+    auto rotatedYZ = glm::rotate(rotatedZ, orientation[1], glm::vec3(0.0f, 1.0f, 0.0f));
+    auto rotatedXYZ = glm::rotate(rotatedYZ, orientation[0], glm::vec3(1.0f, 0.0f, 0.0f));
+
+    return rotatedXYZ;
 }
 
 size_t PhongSceneObject::vertexBufferStrideLength() const

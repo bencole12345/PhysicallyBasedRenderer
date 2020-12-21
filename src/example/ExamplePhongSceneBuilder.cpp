@@ -16,6 +16,7 @@ using namespace phong;
 static float orangeCubeVertices[] = {
         // Position(x, y, z), Normal(x, y, z), Colour(r, g, b)
 
+        // Back face
         0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
         0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
@@ -23,6 +24,7 @@ static float orangeCubeVertices[] = {
         -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
         0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.5f, 0.2f,
 
+        // Front face
         -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f, 0.2f,
         0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f, 0.2f,
         0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f, 0.2f,
@@ -30,6 +32,7 @@ static float orangeCubeVertices[] = {
         -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f, 0.2f,
 
+        // Left face
         -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
@@ -37,6 +40,7 @@ static float orangeCubeVertices[] = {
         -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
 
+        // Right face
         0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
@@ -44,6 +48,7 @@ static float orangeCubeVertices[] = {
         0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.5f, 0.2f,
 
+        // Bottom face
         -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
@@ -51,6 +56,7 @@ static float orangeCubeVertices[] = {
         -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
 
+        // Top face
         0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
         -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.5f, 0.2f,
@@ -62,13 +68,13 @@ static float orangeCubeVertices[] = {
 static float greyPlaneVertices[] = {
         // Position(x, y, z), Normal(x, y, z), Colour(r, g, b)
 
-        10.0f, -2.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
-        10.0f, -2.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
-        -10.0f, -2.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
+        10.0f, 0.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
+        10.0f, 0.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
+        -10.0f, 0.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
 
-        -10.0f, -2.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
-        10.0f, -2.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
-        -10.0f, -2.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
+        -10.0f, 0.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
+        10.0f, 0.0f, 10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
+        -10.0f, 0.0f, -10.0f, 0.0f, 1.0f, 0.0f, 0.3f, 0.3f, 0.3f,
 };
 
 static float cookieCubeVertices[] = {
@@ -128,7 +134,7 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<PhongScene>* 
     // Set up a shader program for the triangles
     const std::string vertexShader = "src/phong/shaders/vertex/phong_untextured.vert";
     const std::string fragmentShader = "src/phong/shaders/fragment/phong_untextured.frag";
-    std::shared_ptr<ShaderProgram> shaderProgram(new ShaderProgram(vertexShader, fragmentShader));
+    std::shared_ptr<ShaderProgram> untexturedShaderProgram(new ShaderProgram(vertexShader, fragmentShader));
 
     const std::string texturedVertexShader = "src/phong/shaders/vertex/phong_textured.vert";
     const std::string texturedFragmentShader = "src/phong/shaders/fragment/phong_textured.frag";
@@ -136,34 +142,46 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<PhongScene>* 
             new ShaderProgram(texturedVertexShader, texturedFragmentShader));
     std::shared_ptr<Texture> texture(new Texture("resources/textures/cookie.jpg"));
 
-    // Create the cube
+    // Create the untextured cube
     float kD = 0.6f;
     float kS = 0.4f;
     float specularN = 2.0f;
-//    std::shared_ptr<PhongSceneObject> triangle(
-//            new PhongSceneObject(orangeCubeVertices, sizeof(orangeCubeVertices), shaderProgram, kD, kS,
-//                    specularN));
+    glm::vec3 orangeCubePosition(2.0f, 0.0f, 0.0f);
+    glm::vec3 orangeCubeOrientation(0.0f);
+    float orangeCubeScale = 1.0f;
+    std::shared_ptr<PhongSceneObject> orangeCube(
+            new PhongSceneObject(orangeCubeVertices, sizeof(orangeCubeVertices), untexturedShaderProgram,
+                    orangeCubePosition, orangeCubeOrientation, orangeCubeScale, kD, kS, specularN));
 
+    // Create the textured cube
+    specularN = 3.0f;
+    glm::vec3 cookiePosition(-2.0f, 0.0f, 0.0f);
+    glm::vec3 cookieOrientation(0.5f, 0.5f, 0.5f);
+    float cookieScale = 2.0f;
     std::shared_ptr<PhongSceneObject> cookieCube(
-            new PhongSceneObject(cookieCubeVertices, sizeof(cookieCubeVertices), texture, texturedShaderProgram, kD, kS,
-                    specularN));
+            new PhongSceneObject(cookieCubeVertices, sizeof(cookieCubeVertices), texture, texturedShaderProgram,
+                    cookiePosition, cookieOrientation, cookieScale, kD, kS, specularN));
 
     // Create the plane
     kD = 0.8f;
     kS = 0.2f;
     specularN = 1.0f;
+    glm::vec3 planePosition(0.0f);
+    glm::vec3 planeOrientation(0.0f);
+    float planeScale = 1.0f;
     std::shared_ptr<PhongSceneObject> plane(
-            new PhongSceneObject(greyPlaneVertices, sizeof(greyPlaneVertices), shaderProgram, kD, kS, specularN));
+            new PhongSceneObject(greyPlaneVertices, sizeof(greyPlaneVertices), untexturedShaderProgram, planePosition,
+                    planeOrientation, planeScale, kD, kS, specularN));
 
     // Scene colour information
     glm::vec3 backgroundColour(0.0f, 0.0f, 0.0f);
-    glm::vec3 ambientLight(0.2f, 0.2f, 0.3f);
+    glm::vec3 ambientLight(0.5f, 0.5f, 0.5f);
 
     // Allocate the scene
     *scene = std::make_shared<PhongScene>(backgroundColour, ambientLight);
 
     // Add the scene objects
-//    (*scene)->addSceneObject(triangle);
+    (*scene)->addSceneObject(orangeCube);
     (*scene)->addSceneObject(cookieCube);
     (*scene)->addSceneObject(plane);
 

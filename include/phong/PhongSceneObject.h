@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -22,8 +23,6 @@ namespace phong {
  *
  * Consists of a list of vertices and information about the material.
  *
- * TODO: Support setting position and orientation of the object
- *
  * TODO: Handle shader programs better (there are only two possible ones we could
  *       need - one for textured, one for untextured)
  */
@@ -31,6 +30,11 @@ class PhongSceneObject {
 
 private:
     std::shared_ptr<ShaderProgram> shaderProgram;
+
+    // Geometric information
+    glm::vec3 pos;
+    glm::vec3 orientation;
+    float scale;
 
     // Material information
     float kD;
@@ -57,6 +61,9 @@ public:
             const float* vertices,
             size_t vertexBufferLen,
             std::shared_ptr<ShaderProgram> shaderProgram,
+            glm::vec3 pos,
+            glm::vec3 orientation,
+            float scale,
             float kD,
             float kS,
             float specularN = 1.0f);
@@ -65,13 +72,16 @@ public:
      * Create a textured object.
      */
      PhongSceneObject(
-             const float* vertices,
-             size_t vertexBufferLen,
-             std::shared_ptr<Texture> texture,
-             std::shared_ptr<ShaderProgram> shaderProgram,
-             float kD,
-             float kS,
-             float specularN = 1.0f);
+            const float* vertices,
+            size_t vertexBufferLen,
+            std::shared_ptr<Texture> texture,
+            std::shared_ptr<ShaderProgram> shaderProgram,
+            glm::vec3 pos,
+            glm::vec3 orientation,
+            float scale,
+            float kD,
+            float kS,
+            float specularN = 1.0f);
 
     /**
      * Render this object.

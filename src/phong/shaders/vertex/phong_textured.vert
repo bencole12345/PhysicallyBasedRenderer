@@ -25,7 +25,7 @@ void main()
    Position_world = Model * model_coords;
 
    // Rotate the normal of this vertex into world space
-   Normal = Model * normal_coords;
+   Normal = inverse(transpose(Model)) * normal_coords;
 
    // Pass through the texture coordinates
    TexCoord = TexCoord_in;
