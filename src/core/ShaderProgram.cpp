@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #define GL_SILENCE_DEPRECATION
@@ -17,7 +18,7 @@
 
 namespace {
 
-unsigned int loadAndCompileShader(const std::string& shaderLocation, GLenum shaderType)
+unsigned int loadAndCompileShader(std::string_view shaderLocation, GLenum shaderType)
 {
     // Read the file
     std::ifstream stream(shaderLocation);
@@ -53,7 +54,7 @@ unsigned int loadAndCompileShader(const std::string& shaderLocation, GLenum shad
 
 namespace PBR {
 
-ShaderProgram::ShaderProgram(const std::string& vertexShaderLocation, const std::string& fragmentShaderLocation)
+ShaderProgram::ShaderProgram(std::string_view vertexShaderLocation, std::string_view fragmentShaderLocation)
         :shaderProgramId(glCreateProgram())
 {
     // Load the shaders

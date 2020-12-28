@@ -17,9 +17,9 @@ using namespace PBR;
 
 int main()
 {
-    std::string title = "Physically-Based Renderer";
-    int width = 640;
-    int height = 480;
+    std::string title = "Physically Based Renderer";
+    int width = 800;
+    int height = 600;
 
     if (!glfwInit()) {
         std::cerr << "Failed to initialise GLFW." << std::endl;

@@ -20,8 +20,10 @@ namespace PBR {
 namespace phong {
 
 PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBufferLen,
-        std::shared_ptr<ShaderProgram> shaderProgram, glm::vec3 pos, glm::vec3 orientation, float scale, float kD, float kS, float specularN)
-        :shaderProgram(std::move(shaderProgram)), pos(pos), orientation(orientation), scale(scale), kD(kD), kS(kS), specularN(specularN),
+        std::shared_ptr<ShaderProgram> shaderProgram, glm::vec3 pos, glm::vec3 orientation, float scale, float kD,
+        float kS, float specularN)
+        :shaderProgram(std::move(shaderProgram)), pos(pos), orientation(orientation), scale(scale), kD(kD), kS(kS),
+         specularN(specularN),
          vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId(),
          hasTexture(false), texture({})
 {
@@ -29,8 +31,10 @@ PhongSceneObject::PhongSceneObject(const float* vertices, const size_t vertexBuf
 }
 
 PhongSceneObject::PhongSceneObject(const float* vertices, size_t vertexBufferLen, std::shared_ptr<Texture> texture,
-        std::shared_ptr<ShaderProgram> shaderProgram, glm::vec3 pos, glm::vec3 orientation, float scale, float kD, float kS, float specularN)
-        :shaderProgram(std::move(shaderProgram)), pos(pos), orientation(orientation), scale(scale), kD(kD), kS(kS), specularN(specularN),
+        std::shared_ptr<ShaderProgram> shaderProgram, glm::vec3 pos, glm::vec3 orientation, float scale, float kD,
+        float kS, float specularN)
+        :shaderProgram(std::move(shaderProgram)), pos(pos), orientation(orientation), scale(scale), kD(kD), kS(kS),
+         specularN(specularN),
          vertices(vertices), vertexBufferLen(vertexBufferLen), vaoId(), vboId(),
          hasTexture(true), texture(texture)
 {

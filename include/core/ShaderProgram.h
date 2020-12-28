@@ -1,6 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_SHADERPROGRAM
 #define PHYSICALLYBASEDRENDERER_SHADERPROGRAM
 
+#include <string_view>
 #include <vector>
 
 #include <glm/vec3.hpp>
@@ -17,7 +18,7 @@ private:
     const unsigned int shaderProgramId;
 
 public:
-    ShaderProgram(const std::string& vertexShaderLocation, const std::string& fragmentShaderLocation);
+    ShaderProgram(std::string_view vertexShaderLocation, std::string_view fragmentShaderLocation);
     ~ShaderProgram();
 
     unsigned int id() const;

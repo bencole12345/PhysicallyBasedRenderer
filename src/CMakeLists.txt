@@ -13,6 +13,7 @@ add_executable(renderer
         core/Renderer.cpp
         core/RendererDriver.cpp
         core/ShaderProgram.cpp
+        core/Skybox.cpp
         core/Texture.cpp
         core/Window.cpp
         example/ExamplePhongSceneBuilder.cpp

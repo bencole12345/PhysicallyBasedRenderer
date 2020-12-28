@@ -2,9 +2,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "core/PointLightSource.h"
 #include "core/ShaderProgram.h"
+#include "core/Skybox.h"
 #include "core/Texture.h"
 #include "phong/PhongScene.h"
 #include "phong/PhongSceneObject.h"
@@ -131,15 +133,18 @@ static float cookieCubeVertices[] = {
 
 void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<PhongScene>* scene)
 {
-    // Set up a shader program for the triangles
-    const std::string vertexShader = "src/phong/shaders/vertex/phong_untextured.vert";
-    const std::string fragmentShader = "src/phong/shaders/fragment/phong_untextured.frag";
+    // Shader program for the untextured cube
+    const std::string vertexShader = "src/shaders/phong/phong_untextured.vert";
+    const std::string fragmentShader = "src/shaders/phong/phong_untextured.frag";
     std::shared_ptr<ShaderProgram> untexturedShaderProgram(new ShaderProgram(vertexShader, fragmentShader));
 
-    const std::string texturedVertexShader = "src/phong/shaders/vertex/phong_textured.vert";
-    const std::string texturedFragmentShader = "src/phong/shaders/fragment/phong_textured.frag";
+    // Shader program for the textured cube
+    const std::string texturedVertexShader = "src/shaders/phong/phong_textured.vert";
+    const std::string texturedFragmentShader = "src/shaders/phong/phong_textured.frag";
     std::shared_ptr<ShaderProgram> texturedShaderProgram(
             new ShaderProgram(texturedVertexShader, texturedFragmentShader));
+
+    // Texture for the cube
     std::shared_ptr<Texture> texture(new Texture("resources/textures/cookie.jpg"));
 
     // Create the untextured cube
@@ -166,7 +171,7 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<PhongScene>* 
     kD = 0.8f;
     kS = 0.2f;
     specularN = 1.0f;
-    glm::vec3 planePosition(0.0f);
+    glm::vec3 planePosition(0.0f, -2.0f, 0.0f);
     glm::vec3 planeOrientation(0.0f);
     float planeScale = 1.0f;
     std::shared_ptr<PhongSceneObject> plane(
@@ -177,13 +182,27 @@ void ExamplePhongSceneBuilder::loadBasicPhongScene(std::shared_ptr<PhongScene>* 
     glm::vec3 backgroundColour(0.0f, 0.0f, 0.0f);
     glm::vec3 ambientLight(0.5f, 0.5f, 0.5f);
 
+    // Set up the skybox
+    std::vector<std::string_view> skyboxTextures{
+            "resources/skyboxes/ocean_with_mountains/right.jpg",
+            "resources/skyboxes/ocean_with_mountains/left.jpg",
+            "resources/skyboxes/ocean_with_mountains/top.jpg",
+            "resources/skyboxes/ocean_with_mountains/bottom.jpg",
+            "resources/skyboxes/ocean_with_mountains/front.jpg",
+            "resources/skyboxes/ocean_with_mountains/back.jpg"
+    };
+    std::shared_ptr<Skybox> skybox(new Skybox(skyboxTextures));
+
     // Allocate the scene
     *scene = std::make_shared<PhongScene>(backgroundColour, ambientLight);
 
     // Add the scene objects
     (*scene)->addSceneObject(orangeCube);
     (*scene)->addSceneObject(cookieCube);
-    (*scene)->addSceneObject(plane);
+//    (*scene)->addSceneObject(plane);
+
+    // Add the skybox
+    (*scene)->addSkybox(skybox);
 
     // Add a light source (below, to the right)
     glm::vec3 lightPosition(2.0f, -1.0f, 2.0f);

@@ -21,7 +21,7 @@ PhongRenderer::PhongRenderer(const std::shared_ptr<PhongScene>& scene)
 
     // Cull faces oriented the wrong way for performance
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT_FACE);
+    glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
     scene->activate();
