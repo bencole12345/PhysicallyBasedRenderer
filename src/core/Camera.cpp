@@ -87,12 +87,16 @@ void Camera::rotateRight(float angle)
 
 void Camera::rotateUp(float angle)
 {
-    orientationUpDown = glm::mod(orientationUpDown + angle, 2.0f * glm::pi<float>());
+    if (orientationUpDown + angle < 0.5f * glm::pi<float>()) {
+        orientationUpDown += angle;
+    }
 }
 
 void Camera::rotateDown(float angle)
 {
-    orientationUpDown = glm::mod(orientationUpDown - angle, 2.0f * glm::pi<float>());
+    if (orientationUpDown - angle > -0.5 * glm::pi<float>()) {
+        orientationUpDown -= angle;
+    }
 }
 
 glm::mat4 Camera::rotationMatrix() const
