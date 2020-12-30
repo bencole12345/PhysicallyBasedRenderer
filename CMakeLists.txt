@@ -1,8 +1,17 @@
 cmake_minimum_required(VERSION 3.17)
-project(PhysicallyBasedRenderer)
+
+project(PhysicallyBasedRenderer
+        VERSION 0.1
+        DESCRIPTION "A library for physically based rendering using OpenGL")
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+find_package(glfw3 CONFIG REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb.h")
+
+include_directories(${PROJECT_SOURCE_DIR}/include/PBR)
 
 add_subdirectory(src)
+add_subdirectory(example)

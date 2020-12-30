@@ -6,6 +6,10 @@ A physically-based renderer I'm working on, using C++ and OpenGL. Check back soo
 
 (Currently I've only implemented Phong shading with up to 16 point light sources)
 
+## CMake targets
+- The library `pbr`
+- An example application `main` that links against `pbr`
+
 ## Dependencies (vcpkg)
 
 - `glfw3`
