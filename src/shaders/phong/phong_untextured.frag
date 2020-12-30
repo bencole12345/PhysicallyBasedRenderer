@@ -15,7 +15,6 @@ struct PointLightSources {
    vec3 colours[MAX_LIGHTS];
 };
 
-in vec3 MaterialColour;
 in vec4 Position_world;
 in vec4 Normal;
 
@@ -24,6 +23,7 @@ uniform vec4 cameraPosition;
 uniform Material material;
 uniform vec4 ambientLight;
 uniform PointLightSources lights;
+uniform vec3 MaterialColour;
 
 out vec4 FragColor;
 

@@ -12,14 +12,17 @@ add_executable(renderer
         core/PointLightSource.cpp
         core/Renderer.cpp
         core/RendererDriver.cpp
+        core/Scene.cpp
+        core/SceneObject.cpp
         core/ShaderProgram.cpp
         core/Skybox.cpp
         core/Texture.cpp
+        core/VertexData.cpp
         core/Window.cpp
-        example/ExamplePhongSceneBuilder.cpp
+        example/ExampleSceneBuilder.cpp
         phong/PhongRenderer.cpp
-        phong/PhongScene.cpp
-        phong/PhongSceneObject.cpp)
+        scene_objects/Cube.cpp
+        scene_objects/Plane.cpp)
 
 target_include_directories(renderer PRIVATE ${STB_INCLUDE_DIRS})
 

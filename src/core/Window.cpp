@@ -5,6 +5,8 @@
 #include <string>
 #include <utility>
 
+#include <glm/vec3.hpp>
+
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
 
@@ -19,6 +21,8 @@ namespace PBR {
 Window::Window(const std::string& title, int width, int height)
     : window()
 {
+    // TODO: Check glfwInit() has been called
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -56,14 +60,17 @@ Window::~Window()
     glfwTerminate();
 }
 
-void Window::loopUntilClosed(std::shared_ptr<Renderer> renderer)
+void Window::loopUntilClosed(std::shared_ptr<Renderer> renderer, std::shared_ptr<Scene> scene)
 {
     // Compute aspect ratio
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     float aspectRatio = (float)width / (float)height;
 
-    RendererDriver driver(std::move(renderer), aspectRatio);
+    glm::vec3 backgroundColour = scene->getBackgroundColour();
+    glClearColor(backgroundColour.r, backgroundColour.g, backgroundColour.b, 1.0f);
+
+    RendererDriver driver(std::move(renderer), aspectRatio, std::move(scene));
     GLFWCallbackWrapper::bindRendererDriver(&driver);
 
     double previousTime = glfwGetTime();

@@ -13,9 +13,14 @@
 
 #include "core/Renderer.h"
 #include "core/RendererDriver.h"
+#include "core/Scene.h"
 
 namespace PBR {
 
+/**
+ * An OpenGL window that can be used with a `Renderer` and `Scene` object
+ * to render graphics to the user.
+ */
 class Window {
 private:
     GLFWwindow *window;
@@ -27,7 +32,7 @@ public:
     /**
      * Runs the application's main loop.
      */
-    void loopUntilClosed(std::shared_ptr<Renderer> renderer);
+    void loopUntilClosed(std::shared_ptr<Renderer> renderer, std::shared_ptr<Scene> scene);
 
 private:
     class GLFWCallbackWrapper {

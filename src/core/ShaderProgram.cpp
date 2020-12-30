@@ -104,6 +104,12 @@ void ShaderProgram::setUniform(const std::string& name, double value)
     glUniform1d(position, value);
 }
 
+void ShaderProgram::setUniform(const std::string& name, int value)
+{
+    int position = glGetUniformLocation(shaderProgramId, name.c_str());
+    glUniform1i(position, value);
+}
+
 void ShaderProgram::setUniform(const std::string& name, const glm::vec3& value)
 {
     int position = glGetUniformLocation(shaderProgramId, name.c_str());

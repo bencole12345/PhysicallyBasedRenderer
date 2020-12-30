@@ -4,7 +4,6 @@
 
 layout (location = 0) in vec3 VertexPos;
 layout (location = 1) in vec3 Normal_modelCoords;
-layout (location = 2) in vec3 MaterialColour_in;
 
 uniform mat4 Model;
 uniform mat4 View;
@@ -13,7 +12,6 @@ uniform double time;
 
 out vec4 Normal;
 out vec4 Position_world;
-out vec3 MaterialColour;
 
 void main()
 {
@@ -29,7 +27,4 @@ void main()
 
    // Rotate the normal of this vertex into world space
    Normal = Model * normal_coords;
-
-   // Pass through the material colour
-   MaterialColour = MaterialColour_in;
 }

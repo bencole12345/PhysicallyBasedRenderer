@@ -5,6 +5,7 @@
 
 #include "Camera.h"
 #include "core/Renderer.h"
+#include "core/Scene.h"
 
 namespace PBR {
 
@@ -42,9 +43,10 @@ private:
     float moveSpeed;
     float turnSpeed;
     std::shared_ptr<Renderer> renderer;
+    std::shared_ptr<Scene> scene;
 
 public:
-    RendererDriver(std::shared_ptr<Renderer> renderer, float aspectRatio);
+    RendererDriver(std::shared_ptr<Renderer> renderer, float aspectRatio, std::shared_ptr<Scene> scene);
 
     void setAspectRatio(float aspectRatio);
 

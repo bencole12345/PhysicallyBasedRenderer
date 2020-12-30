@@ -2,25 +2,41 @@
 #define PHYSICALLYBASEDRENDERER_PHONGRENDERER
 
 #include <memory>
-#include <utility>
 
 #include "core/Renderer.h"
-#include "phong/PhongScene.h"
+#include "core/Scene.h"
+#include "core/ShaderProgram.h"
 
-namespace PBR {
-namespace phong {
+namespace PBR::phong {
 
+/**
+ * An implementation of the `Renderer` protocol that uses the Phong
+ * shading model.
+ */
 class PhongRenderer : public Renderer {
-    std::shared_ptr<PhongScene> scene;
+private:
+
+    /**
+     * Shader used to render textured scene objects.
+     */
+    ShaderProgram texturedObjectShader;
+
+    /**
+     * Shader used to render non-textured scene objects.
+     */
+    ShaderProgram nonTexturedObjectShader;
+
+    // TODO: Consider putting a skybox shader here too
+    // (should the skybox rendering logic be implementation-specific?)
 
 public:
-    explicit PhongRenderer(const std::shared_ptr<PhongScene>& scene);
-    ~PhongRenderer() noexcept override;
+    PhongRenderer();
 
-    void render(const Camera& camera, double time) override;
+    void activate() override;
+
+    void render(std::shared_ptr<Scene> scene, const Camera& camera, double time) override;
 };
 
-} // namespace phong
-} // namespace PBR
+} // namespace PBR::phong
 
 #endif //PHYSICALLYBASEDRENDERER_PHONGRENDERER

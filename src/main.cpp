@@ -8,10 +8,10 @@
 #include <OpenGL/gl3.h>
 
 #include "core/Renderer.h"
+#include "core/Scene.h"
 #include "core/Window.h"
-#include "example/ExamplePhongSceneBuilder.h"
+#include "example/ExampleSceneBuilder.h"
 #include "phong/PhongRenderer.h"
-#include "phong/PhongScene.h"
 
 using namespace PBR;
 
@@ -30,14 +30,14 @@ int main()
     Window window(title, width, height);
 
     // Create a scene
-    std::shared_ptr<phong::PhongScene> scene;
-    ExamplePhongSceneBuilder::loadBasicPhongScene(&scene);
+    std::shared_ptr<Scene> scene;
+    ExampleSceneBuilder::loadBasicScene(&scene);
 
-    // Create a renderer
-    std::shared_ptr<Renderer> renderer(new phong::PhongRenderer(scene));
+    // Create a Phong renderer
+    std::shared_ptr<Renderer> renderer(new phong::PhongRenderer());
 
     // Run the main loop
-    window.loopUntilClosed(renderer);
+    window.loopUntilClosed(renderer, scene);
 
     return 0;
 }

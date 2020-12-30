@@ -14,6 +14,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "core/Scene.h"
+
 namespace PBR {
 
 MovementState::MovementState()
@@ -22,10 +24,11 @@ MovementState::MovementState()
 {
 }
 
-RendererDriver::RendererDriver(std::shared_ptr<Renderer> renderer, float aspectRatio)
+RendererDriver::RendererDriver(std::shared_ptr<Renderer> renderer, float aspectRatio, std::shared_ptr<Scene> scene)
         :camera(glm::vec3(0.0, 0.0, 5.0), aspectRatio), movementState(), moveSpeed(DEFAULT_MOVE_SPEED),
-         turnSpeed(DEFAULT_TURN_SPEED), renderer(std::move(renderer))
+         turnSpeed(DEFAULT_TURN_SPEED), renderer(std::move(renderer)), scene(std::move(scene))
 {
+    this->renderer->activate();
 }
 
 void RendererDriver::setAspectRatio(float aspectRatio)
@@ -71,7 +74,7 @@ void RendererDriver::update(float dt)
 
 void RendererDriver::render(float time)
 {
-    renderer->render(camera, time);
+    renderer->render(scene, camera, time);
 }
 
 void RendererDriver::onKeyboardEvent(int key, int scancode, int action, int mods)
