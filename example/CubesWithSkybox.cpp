@@ -1,11 +1,4 @@
-#include <iostream>
 #include <string>
-
-#define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
-
 #include <PBR/PBR.h>
 
 void loadScene(std::shared_ptr<PBR::Scene>* scene)
@@ -92,12 +85,6 @@ int main()
     std::string title = "Physically Based Renderer: Cubes with Skybox Example";
     int width = 800;
     int height = 600;
-
-    // TODO: Move this to the Window class
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialise GLFW." << std::endl;
-        return 1;
-    }
 
     // Create a window
     PBR::Window window(title, width, height);

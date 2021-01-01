@@ -1,6 +1,6 @@
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PhysicallyBasedRenderer_SOURCE_DIR}/include/**/*.h")
 
-add_library(pbr
+add_library(PBR
         core/Camera.cpp
         core/PointLightSource.cpp
         core/Renderer.cpp
@@ -18,26 +18,26 @@ add_library(pbr
         scene_objects/Plane.cpp
         ${HEADER_LIST})
 
-target_include_directories(pbr
+target_include_directories(PBR
         PUBLIC
             ../include
         PRIVATE
             ${STB_INCLUDE_DIRS})
 
 set(PBR_PUBLIC_LINK_DEPENDENCIES
-        glfw
-        GLEW::GLEW
-        glm
-        tinyobjloader::tinyobjloader)
+        glm)
 
 if (APPLE)
     list(APPEND PUBLIC_LINK_DEPENDENCIES "-framework OpenGL")
 endif()
 
 set(PBR_PRIVATE_LINK_DEPENDENCIES
-        ${BOOST_FUNCTIONAL_INCLUDE_DIRS})
+        ${BOOST_FUNCTIONAL_INCLUDE_DIRS}
+        glfw
+        GLEW::GLEW
+        tinyobjloader::tinyobjloader)
 
-target_link_libraries(pbr PUBLIC ${PBR_PUBLIC_LINK_DEPENDENCIES}
+target_link_libraries(PBR PUBLIC ${PBR_PUBLIC_LINK_DEPENDENCIES}
                           PRIVATE ${PBR_PRIVATE_LINK_DEPENDENCIES})
 
 source_group(

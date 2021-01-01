@@ -1,5 +1,5 @@
 add_executable(CubesWithSkybox CubesWithSkybox.cpp)
-target_link_libraries(CubesWithSkybox PRIVATE pbr)
+target_link_libraries(CubesWithSkybox PRIVATE PBR)
 
 add_executable(ObjectLoading ObjectLoading.cpp)
-target_link_libraries(ObjectLoading PRIVATE pbr)
+target_link_libraries(ObjectLoading PRIVATE PBR)

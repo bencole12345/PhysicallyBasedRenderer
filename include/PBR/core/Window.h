@@ -46,6 +46,8 @@ private:
         GLFWCallbackWrapper(GLFWCallbackWrapper&&) = delete;
         ~GLFWCallbackWrapper() = delete;
 
+        static bool isCurrentlyUnbound();
+
         static void bindWindow(Window* window);
         static void unbindWindow();
         static void bindRendererDriver(RendererDriver* driver);

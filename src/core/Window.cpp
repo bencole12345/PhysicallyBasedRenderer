@@ -19,9 +19,14 @@
 namespace PBR {
 
 Window::Window(const std::string& title, int width, int height)
-    : window()
+        :window()
 {
-    // TODO: Check glfwInit() has been called
+    assert(GLFWCallbackWrapper::isCurrentlyUnbound() && "Cannot create multiple Window instances at the same time.");
+
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialise GLFW." << std::endl;
+        exit(1);
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -65,7 +70,7 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer> renderer, std::shared_ptr
     // Compute aspect ratio
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    float aspectRatio = (float)width / (float)height;
+    float aspectRatio = (float) width / (float) height;
 
     glm::vec3 backgroundColour = scene->getBackgroundColour();
     glClearColor(backgroundColour.r, backgroundColour.g, backgroundColour.b, 1.0f);
@@ -105,8 +110,15 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer> renderer, std::shared_ptr
 Window* Window::GLFWCallbackWrapper::s_window = nullptr;
 RendererDriver* Window::GLFWCallbackWrapper::s_rendererDriver = nullptr;
 
+bool Window::GLFWCallbackWrapper::isCurrentlyUnbound()
+{
+    return s_window == nullptr && s_rendererDriver == nullptr;
+}
+
 void Window::GLFWCallbackWrapper::bindWindow(Window* window)
 {
+    assert(Window::GLFWCallbackWrapper::s_window == nullptr
+                   && "Cannot create multiple Window instances at the same time.");
     Window::GLFWCallbackWrapper::s_window = window;
 }
 
@@ -145,7 +157,7 @@ void Window::GLFWCallbackWrapper::frameBufferResizeCallback(GLFWwindow*, int wid
 
     glViewport(0, 0, width, height);
 
-    float aspectRatio = (float)width / (float)height;
+    float aspectRatio = (float) width / (float) height;
     s_rendererDriver->setAspectRatio(aspectRatio);
 }
 
