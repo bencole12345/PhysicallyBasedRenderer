@@ -1,6 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_VERTEXDATA
 #define PHYSICALLYBASEDRENDERER_VERTEXDATA
 
+#include <memory>
 #include <vector>
 
 namespace PBR {
@@ -12,21 +13,24 @@ namespace PBR {
  */
 class VertexData {
 private:
-    std::vector<float> data;
+    std::shared_ptr<std::vector<float>> data;
+    std::shared_ptr<std::vector<unsigned int>> indices;
     size_t stride;
 
     unsigned int vaoId;
     unsigned int vboId;
+    unsigned int eboId;
 
     bool hasNormals;
     bool hasTextureCoordinates;
 
-    size_t positionsOffset;
+    size_t positionOffset;
     size_t normalsOffset;
     size_t textureCoordinatesOffset;
 
 public:
-    VertexData(const float *data, size_t bufferLength, bool textured = true);
+    VertexData(std::shared_ptr<std::vector<float>> vertexData, std::shared_ptr<std::vector<unsigned int>> elementData,
+               bool textured = true);
     ~VertexData();
 
     VertexData(const VertexData& other) = delete;
@@ -65,10 +69,20 @@ public:
 
     unsigned int getVboId() const;
 
+    unsigned int getEboId() const;
+
     /**
      * The number of triangles pointed to by this data.
      */
     unsigned int trianglesCount() const;
+
+    /**
+     * The number of vertices pointed to by this data.
+     */
+    unsigned int verticesCount() const;
+
+private:
+    void initBuffers();
 };
 
 inline
@@ -86,7 +100,7 @@ bool VertexData::includesTextureCoordinates() const
 inline
 size_t VertexData::getPositionsOffset() const
 {
-    return positionsOffset;
+    return positionOffset;
 }
 
 inline
@@ -116,9 +130,21 @@ unsigned int VertexData::getVboId() const
 }
 
 inline
+unsigned int VertexData::getEboId() const
+{
+    return eboId;
+}
+
+inline
 unsigned int VertexData::trianglesCount() const
 {
-    return data.size() / stride;
+    return indices->size() / 3;
+}
+
+inline
+unsigned int VertexData::verticesCount() const
+{
+    return indices->size();
 }
 
 } // namespace PBR

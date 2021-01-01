@@ -6,10 +6,12 @@ project(PhysicallyBasedRenderer
 
 set(CMAKE_CXX_STANDARD 17)
 
+find_path(BOOST_FUNCTIONAL_INCLUDE_DIRS "boost/functional.hpp")
 find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_path(STB_INCLUDE_DIRS "stb.h")
+find_package(tinyobjloader CONFIG REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/include/PBR)
 

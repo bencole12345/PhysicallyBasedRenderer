@@ -1,21 +1,5 @@
-add_executable(main
-        main.cpp)
+add_executable(CubesWithSkybox CubesWithSkybox.cpp)
+target_link_libraries(CubesWithSkybox PRIVATE pbr)
 
-target_compile_features(main PRIVATE cxx_std_17)
-
-if (APPLE)
-    target_link_libraries(main
-        PRIVATE
-            pbr
-            glfw
-            GLEW::GLEW
-            glm
-            "-framework OpenGL")
-else()
-    target_link_libraries(main
-        PRIVATE
-            pbr
-            glfw
-            GLEW::GLEW
-            glm)
-endif()
+add_executable(ObjectLoading ObjectLoading.cpp)
+target_link_libraries(ObjectLoading PRIVATE pbr)

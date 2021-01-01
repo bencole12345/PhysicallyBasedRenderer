@@ -14,6 +14,7 @@ add_library(pbr
         core/Window.cpp
         phong/PhongRenderer.cpp
         scene_objects/Cube.cpp
+        scene_objects/CustomObject.cpp
         scene_objects/Plane.cpp
         ${HEADER_LIST})
 
@@ -23,20 +24,21 @@ target_include_directories(pbr
         PRIVATE
             ${STB_INCLUDE_DIRS})
 
+set(PBR_PUBLIC_LINK_DEPENDENCIES
+        glfw
+        GLEW::GLEW
+        glm
+        tinyobjloader::tinyobjloader)
+
 if (APPLE)
-    target_link_libraries(pbr
-        PUBLIC
-            glfw
-            GLEW::GLEW
-            glm
-        "-framework OpenGL")
-else()
-    target_link_libraries(pbr
-        PUBLIC
-            glfw
-            GLEW::GLEW
-            glm)
+    list(APPEND PUBLIC_LINK_DEPENDENCIES "-framework OpenGL")
 endif()
+
+set(PBR_PRIVATE_LINK_DEPENDENCIES
+        ${BOOST_FUNCTIONAL_INCLUDE_DIRS})
+
+target_link_libraries(pbr PUBLIC ${PBR_PUBLIC_LINK_DEPENDENCIES}
+                          PRIVATE ${PBR_PRIVATE_LINK_DEPENDENCIES})
 
 source_group(
         TREE "${PROJECT_SOURCE_DIR}/include"

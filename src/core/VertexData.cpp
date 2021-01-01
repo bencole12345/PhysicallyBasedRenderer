@@ -1,5 +1,6 @@
 #include "core/VertexData.h"
 
+#include <memory>
 #include <vector>
 
 #define GL_SILENCE_DEPRECATION
@@ -14,6 +15,7 @@
 
 namespace {
 
+inline
 size_t getStride(bool textured)
 {
     // We always have position (3) and normals (3). There are two more
@@ -25,25 +27,44 @@ size_t getStride(bool textured)
 
 namespace PBR {
 
-VertexData::VertexData(const float *data, size_t bufferLength, bool textured)
-    : data(data, data + bufferLength),
-      stride(getStride(textured)),
-      vaoId(),
-      vboId(),
-      hasNormals(true),
-      hasTextureCoordinates(textured),
-      positionsOffset(POSITION_OFFSET),
-      normalsOffset(NORMAL_OFFSET),
-      textureCoordinatesOffset(TEXTURE_COORDS_OFFSET)
+VertexData::VertexData(std::shared_ptr<std::vector<float>> vertexData, std::shared_ptr<std::vector<unsigned int>> elementData, bool textured)
+        :data(std::move(vertexData)),
+         indices(std::move(elementData)),
+         stride(getStride(textured)),
+         vaoId(),
+         vboId(),
+         eboId(),
+         hasNormals(true),
+         hasTextureCoordinates(textured),
+         positionOffset(POSITION_OFFSET),
+         normalsOffset(NORMAL_OFFSET),
+         textureCoordinatesOffset(TEXTURE_COORDS_OFFSET)
 {
-    // Create the vertex array
+    initBuffers();
+}
+
+VertexData::~VertexData()
+{
+    glDeleteBuffers(1, &vboId);
+    glDeleteBuffers(1, &eboId);
+    glDeleteVertexArrays(1, &vaoId);
+}
+
+void VertexData::initBuffers()
+{
+    // Create the vertex array object
     glGenVertexArrays(1, &vaoId);
     glBindVertexArray(vaoId);
 
-    // Create the vertex buffer
+    // Create the vertex buffer to hold the actual vertex data
     glGenBuffers(1, &vboId);
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, bufferLength, data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data->size() * sizeof(float), &(*data)[0], GL_STATIC_DRAW);
+
+    // Create the element buffer object to hold the indices
+    glGenBuffers(1, &eboId);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboId);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(float), &(*indices)[0], GL_STATIC_DRAW);
 
     // Vertex positions
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) (POSITION_OFFSET * sizeof(float)));
@@ -54,16 +75,14 @@ VertexData::VertexData(const float *data, size_t bufferLength, bool textured)
     glEnableVertexAttribArray(1);
 
     // Texture coordinates
-    if (textured) {
+    if (hasTextureCoordinates) {
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*) (TEXTURE_COORDS_OFFSET * sizeof(float)));
         glEnableVertexAttribArray(2);
     }
-}
 
-VertexData::~VertexData()
-{
-    glDeleteBuffers(1, &vboId);
-    glDeleteVertexArrays(1, &vaoId);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 } // namespace PBR

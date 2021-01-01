@@ -8,7 +8,7 @@
 
 #include <PBR/PBR.h>
 
-void loadBasicScene(std::shared_ptr<PBR::Scene>* scene)
+void loadScene(std::shared_ptr<PBR::Scene>* scene)
 {
     // Create the untextured orange cube
     PBR::Material material{.kD = 0.6f, .kS = 0.4f, .specularN = 2.0f};
@@ -89,10 +89,11 @@ void loadBasicScene(std::shared_ptr<PBR::Scene>* scene)
 
 int main()
 {
-    std::string title = "Physically Based Renderer";
+    std::string title = "Physically Based Renderer: Cubes with Skybox Example";
     int width = 800;
     int height = 600;
 
+    // TODO: Move this to the Window class
     if (!glfwInit()) {
         std::cerr << "Failed to initialise GLFW." << std::endl;
         return 1;
@@ -103,7 +104,7 @@ int main()
 
     // Create a scene
     std::shared_ptr<PBR::Scene> scene;
-    loadBasicScene(&scene);
+    loadScene(&scene);
 
     // Create a Phong renderer
     std::shared_ptr<PBR::Renderer> renderer(new PBR::phong::PhongRenderer());

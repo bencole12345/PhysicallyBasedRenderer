@@ -4,7 +4,9 @@ A physically-based renderer I'm working on, using C++ and OpenGL. Check back soo
 
 ![Screenshot](screenshot.png "Early screenshot of a textured and an untextured cube rendered with a skybox using the Phong model")
 
-(Currently I've only implemented Phong shading with up to 16 point light sources)
+![Screenshot 2](screenshot2.png "Screenshot showing object loading in action")
+
+(Currently I've only implemented Phong shading)
 
 ## CMake targets
 - The library `pbr`
@@ -12,7 +14,9 @@ A physically-based renderer I'm working on, using C++ and OpenGL. Check back soo
 
 ## Dependencies (vcpkg)
 
+- `boost-functional`
 - `glfw3`
 - `glm`
 - `opengl`
 - `stb`
+- `tinyobjloader`

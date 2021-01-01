@@ -51,9 +51,6 @@ void PhongRenderer::render(std::shared_ptr<Scene> scene, const Camera& camera, d
                 : nonTexturedObjectShader;
         glUseProgram(shaderProgram.id());
 
-        // Bind the vertex array object
-        glBindVertexArray(object->vertexData->getVaoId());
-
         // If the object has a texture, bind that too
         if (object->hasTexture()) {
             glActiveTexture(GL_TEXTURE0);
@@ -90,8 +87,9 @@ void PhongRenderer::render(std::shared_ptr<Scene> scene, const Camera& camera, d
         }
 
         // Draw the object
-        unsigned int count = object->vertexData->trianglesCount();
-        glDrawArrays(GL_TRIANGLES, 0, count);
+        glBindVertexArray(object->vertexData->getVaoId());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->vertexData->getEboId());
+        glDrawElements(GL_TRIANGLES, object->vertexData->verticesCount(), GL_UNSIGNED_INT, (void*)0);
     }
 
     // Render the skybox, if the scene has one
