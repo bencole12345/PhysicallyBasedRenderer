@@ -8,7 +8,6 @@ layout (location = 1) in vec3 Normal_modelCoords;
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
-uniform double time;
 
 out vec4 Normal;
 out vec4 Position_world;

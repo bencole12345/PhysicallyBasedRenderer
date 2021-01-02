@@ -1,12 +1,8 @@
 #include "phong/PhongRenderer.h"
 
-#include <string>
-#include <utility>
+#include <optional>
 
 #define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
 #include <glm/mat4x4.hpp>
@@ -15,6 +11,7 @@
 #include "core/Camera.h"
 #include "core/Scene.h"
 #include "core/ShaderProgram.h"
+#include "phong/PhongShaderUniforms.h"
 
 #define TEXTURED_OBJECT_VERTEX_SHADER "src/shaders/phong/phong_textured.vert"
 #define TEXTURED_OBJECT_FRAGMENT_SHADER "src/shaders/phong/phong_textured.frag"
@@ -45,46 +42,30 @@ void PhongRenderer::render(std::shared_ptr<Scene> scene, const Camera& camera, d
     // Render each object in the scene
     for (const auto& object : scene->getSceneObjectsList()) {
 
-        // Use the shader program
+        // Select the shader program that we are going to use
         ShaderProgram& shaderProgram = object->hasTexture()
                 ? texturedObjectShader
                 : nonTexturedObjectShader;
+
+        // Enable the shader program
         glUseProgram(shaderProgram.id());
 
-        // If the object has a texture, bind that too
-        if (object->hasTexture()) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, object->texture->get()->id());
-            // TODO: Give this a better name
-            shaderProgram.setUniform("myTexture", 0);
-        }
-
-        // Compute the matrices we need to pass
-        const glm::mat4 modelMatrix = object->getModelMatrix();
-        const glm::mat4 viewMatrix = camera.getViewMatrix();
-        const glm::mat4 projectionMatrix = camera.getProjectionMatrix();
-
-        // Additional values that need to be passed in
-        const glm::vec4 cameraPosition(camera.position(), 1.0f);
-        const glm::vec4 ambientLight(scene->getAmbientLight(), 1.0f);
-
-        // Set all the uniforms
-        // TODO: Use a struct that holds all of these
-        shaderProgram.setUniform("Model", modelMatrix);
-        shaderProgram.setUniform("View", viewMatrix);
-        shaderProgram.setUniform("Projection", projectionMatrix);
-        shaderProgram.setUniform("cameraPosition", cameraPosition);
-        shaderProgram.setUniform("time", time);
-        shaderProgram.setUniform("material.kD", object->material.kD);
-        shaderProgram.setUniform("material.kS", object->material.kS);
-        shaderProgram.setUniform("material.specularN", object->material.specularN);
-        shaderProgram.setUniform("ambientLight", ambientLight);
-        shaderProgram.setUniform("lights.positions", scene->getLightPositions());
-        shaderProgram.setUniform("lights.colours", scene->getLightColours());
-
-        if (object->hasConstantColour()) {
-            shaderProgram.setUniform("MaterialColour", object->colour.value());
-        }
+        // Write the uniforms to the shader
+        PhongShaderUniforms uniforms{
+            .modelMatrix = object->getModelMatrix(),
+            .viewMatrix = camera.getViewMatrix(),
+            .projectionMatrix = camera.getProjectionMatrix(),
+            .cameraPosition = camera.position(),
+            .material = object->material,
+            .lightingInfo = LightingInfo{
+                .ambientLight = scene->getAmbientLight(),
+                .pointLightPositions = scene->getLightPositions(),
+                .pointLightColours = scene->getLightColours()
+            },
+            .textureId = object->hasTexture() ? std::optional<unsigned int>(object->texture->get()->id()) : std::nullopt,
+            .colour = object->hasConstantColour() ? std::optional<glm::vec3>(object->colour.value()) : std::nullopt
+        };
+        writeUniformsToShaderProgram(uniforms, shaderProgram);
 
         // Draw the object
         glBindVertexArray(object->vertexData->getVaoId());

@@ -13,6 +13,7 @@ add_library(PBR
         core/VertexData.cpp
         core/Window.cpp
         phong/PhongRenderer.cpp
+        phong/PhongShaderUniforms.cpp
         scene_objects/Cube.cpp
         scene_objects/CustomObject.cpp
         scene_objects/Plane.cpp

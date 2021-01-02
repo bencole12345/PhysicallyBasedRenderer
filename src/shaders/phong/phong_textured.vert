@@ -9,7 +9,6 @@ layout (location = 2) in vec2 TexCoord_in;
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
-uniform double time;
 
 out vec4 Normal;
 out vec4 Position_world;
