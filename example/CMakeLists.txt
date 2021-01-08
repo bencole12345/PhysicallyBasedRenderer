@@ -4,5 +4,5 @@ target_link_libraries(CubesWithSkybox PRIVATE PBR)
 add_executable(ObjectLoading ObjectLoading.cpp)
 target_link_libraries(ObjectLoading PRIVATE PBR)
 
-add_executable(PhysicallyRenderedSphere PhysicallyRenderedSphere.cpp)
+add_executable(PhysicallyRenderedSphere PhysicallyRenderedSpheres.cpp)
 target_link_libraries(PhysicallyRenderedSphere PRIVATE PBR)

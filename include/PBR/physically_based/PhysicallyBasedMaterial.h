@@ -9,6 +9,7 @@ struct PhysicallyBasedMaterial {
     glm::vec3 albedo;
     float roughness;
     float metallic;
+    glm::vec3 F0;
 };
 
 } // namespace PBR::physically_based

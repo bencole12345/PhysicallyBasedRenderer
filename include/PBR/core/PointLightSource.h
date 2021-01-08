@@ -8,8 +8,7 @@ namespace PBR {
 struct PointLightSource {
     glm::vec3 pos;
     glm::vec3 colour;
-
-    PointLightSource(glm::vec3 pos, glm::vec3 colour);
+    float intensity {1.0f};
 };
 
 } // namespace PBR

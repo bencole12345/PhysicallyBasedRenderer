@@ -10,8 +10,8 @@
 #include "core/Renderer.h"
 #include "core/Scene.h"
 
-#define DEFAULT_MOVE_SPEED 1.0
-#define DEFAULT_TURN_SPEED 0.7
+#define DEFAULT_MOVE_SPEED 2.0
+#define DEFAULT_TURN_SPEED 0.8
 
 namespace PBR {
 

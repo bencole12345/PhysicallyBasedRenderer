@@ -20,7 +20,7 @@ void writeUniformsToShaderProgram(const PhongShaderUniforms& uniforms, ShaderPro
     shaderProgram.setUniform("material.kS", uniforms.material.kS);
     shaderProgram.setUniform("material.specularN", uniforms.material.specularN);
     shaderProgram.setUniform("lightingInfo.ambientLight", uniforms.lightingInfo.ambientLight);
-    shaderProgram.setUniform("lightingInfo.pointLightPositions", uniforms.lightingInfo.pointLightPositions);
+    shaderProgram.setUniform("lightingInfo.lightPositions", uniforms.lightingInfo.pointLightPositions);
     shaderProgram.setUniform("lightingInfo.pointLightColours", uniforms.lightingInfo.pointLightColours);
 
     if (uniforms.material.colour.has_value()) {

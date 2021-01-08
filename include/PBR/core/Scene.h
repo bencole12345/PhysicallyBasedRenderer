@@ -46,6 +46,12 @@ private:
     std::vector<glm::vec3> lightColours;
 
     /**
+     * List of light intensities, stored contiguously so that they can be
+     * passed easily as a uniform to a shader.
+     */
+    std::vector<float> lightIntensitites;
+
+    /**
      * The background colour. Will default to black if no value has been set.
      */
     glm::vec3 backgroundColour;
@@ -89,6 +95,7 @@ public:
     const std::vector<PointLightSource>& getLights() const;
     const std::vector<glm::vec3>& getLightPositions() const;
     const std::vector<glm::vec3>& getLightColours() const;
+    const std::vector<float>& getLightIntensities() const;
 
     glm::vec3 getBackgroundColour() const;
 
@@ -110,6 +117,7 @@ Scene<SceneObjectType>::Scene(std::vector<std::shared_ptr<SceneObjectType>> scen
     for (const PointLightSource& light : this->lights) {
         lightPositions.push_back(light.pos);
         lightColours.push_back(light.colour);
+        lightIntensitites.push_back(light.intensity);
     }
 }
 
@@ -127,6 +135,7 @@ Scene<SceneObjectType>::Scene(std::vector<std::shared_ptr<SceneObjectType>> scen
     for (const PointLightSource& light : this->lights) {
         lightPositions.push_back(light.pos);
         lightColours.push_back(light.colour);
+        lightIntensitites.push_back(light.intensity);
     }
 }
 
@@ -158,6 +167,12 @@ template <class SceneObjectType>
 const std::vector<glm::vec3>& Scene<SceneObjectType>::getLightColours() const
 {
     return lightColours;
+}
+
+template <class SceneObjectType>
+const std::vector<float>& Scene<SceneObjectType>::getLightIntensities() const
+{
+    return lightIntensitites;
 }
 
 template <class SceneObjectType>

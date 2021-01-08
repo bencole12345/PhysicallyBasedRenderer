@@ -15,10 +15,10 @@
 
 namespace PBR::physically_based {
 
-struct PhysicallyBasedLightingInfo {
-    glm::vec3 ambientLight;
-    std::vector<glm::vec3> pointLightPositions;
-    std::vector<glm::vec3> pointLightColours;
+struct PhysicallyBasedDirectLightingInfo {
+    std::vector<glm::vec3> lightPositions;
+    std::vector<glm::vec3> lightColours;
+    std::vector<float> intensities;
 };
 
 struct PhysicallyBasedShaderUniforms {
@@ -27,12 +27,8 @@ struct PhysicallyBasedShaderUniforms {
     glm::mat4 projectionMatrix;
     glm::vec3 cameraPosition;
     PhysicallyBasedMaterial material;
-    PhysicallyBasedLightingInfo lightingInfo;
-//    std::optional<std::shared_ptr<Texture>> texture;
-
-    // New stuff!
-    std::shared_ptr<skybox::Skybox> skybox;
-
+    PhysicallyBasedDirectLightingInfo lightingInfo;
+    std::optional<std::shared_ptr<skybox::Skybox>> skybox {std::nullopt};
 };
 
 void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms, ShaderProgram& shaderProgram);

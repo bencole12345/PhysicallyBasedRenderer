@@ -87,7 +87,6 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer<SceneType>> renderer, std:
         aspectRatio = (float) width / (float) height;
     }
 
-    // TODO: Check that it's guaranteed that all scenes have a background colour
     glm::vec3 backgroundColour = scene->getBackgroundColour();
     glClearColor(backgroundColour.r, backgroundColour.g, backgroundColour.b, 1.0f);
 

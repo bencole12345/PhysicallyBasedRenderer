@@ -52,6 +52,7 @@ public:
     void setUniform(const std::string& name, const glm::vec3& value);
     void setUniform(const std::string& name, const glm::vec4& value);
     void setUniform(const std::string& name, const glm::mat4& matrix);
+    void setUniform(const std::string& name, const std::vector<float>& values);
     void setUniform(const std::string& name, const std::vector<glm::vec3>& values);
     void setUniform(const std::string& name, const std::shared_ptr<Texture>& texture);
     void setUniform(const std::string& name, const std::shared_ptr<skybox::Skybox>& skybox);

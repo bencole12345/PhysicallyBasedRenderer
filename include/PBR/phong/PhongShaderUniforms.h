@@ -26,6 +26,7 @@ struct PhongShaderUniforms {
     glm::vec3 cameraPosition;
     PhongMaterial material;
     LightingInfo lightingInfo;
+    glm::vec3 ambientLight;
     std::optional<unsigned int> textureId;
 };
 
