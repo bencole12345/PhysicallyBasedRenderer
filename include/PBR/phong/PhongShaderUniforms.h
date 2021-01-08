@@ -7,7 +7,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-#include "core/Material.h"
+#include "PhongMaterial.h"
 #include "core/ShaderProgram.h"
 #include "core/Texture.h"
 
@@ -24,10 +24,9 @@ struct PhongShaderUniforms {
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
     glm::vec3 cameraPosition;
-    Material material;
+    PhongMaterial material;
     LightingInfo lightingInfo;
     std::optional<unsigned int> textureId;
-    std::optional<glm::vec3> colour;
 };
 
 void writeUniformsToShaderProgram(const PhongShaderUniforms& uniforms, ShaderProgram& shaderProgram);

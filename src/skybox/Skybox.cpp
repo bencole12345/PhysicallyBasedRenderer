@@ -1,23 +1,17 @@
-#include "core/Skybox.h"
+#include "skybox/Skybox.h"
 
 #include <iostream>
 #include <string_view>
 #include <vector>
 
 #define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
 #include <stb_image.h>
 
 namespace {
 
-const char vertexShader[] = "src/shaders/skybox.vert";
-const char fragmentShader[] = "src/shaders/skybox.frag";
-
-const float skyboxCubeVertices[] = {
+constexpr float skyboxCubeVertices[] = {
         // Position(x, y, z)
 
         // Back face
@@ -71,10 +65,10 @@ const float skyboxCubeVertices[] = {
 
 } // anonymous namespace
 
-namespace PBR {
+namespace PBR::skybox {
 
 Skybox::Skybox(const std::vector<std::string_view>& faceTextures)
-        :textureId(), shaderProgram(vertexShader, fragmentShader), vaoId(), vboId()
+        :textureId(), vaoId(), vboId()
 {
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
@@ -134,42 +128,4 @@ Skybox::~Skybox()
     glDeleteTextures(1, &textureId);
 }
 
-void Skybox::draw(const Camera& camera)
-{
-    // Use the shader program
-    glUseProgram(shaderProgram.id());
-
-    // Pass in the view and projection matrices
-    const auto viewMatrix = camera.getViewMatrix();
-    const auto projectionMatrix = camera.getProjectionMatrix();
-
-    // Only do the rotation part of the view matrix's transform
-    auto viewMatrixCorrected = glm::mat4(glm::mat3(viewMatrix));
-
-    shaderProgram.setUniform("View", viewMatrixCorrected);
-    shaderProgram.setUniform("Projection", projectionMatrix);
-
-    // Save the old depth culling mode
-    GLint oldDepthFunc;
-    GLint oldCullFace;
-    glGetIntegerv(GL_DEPTH_FUNC, &oldDepthFunc);
-    glGetIntegerv(GL_CULL_FACE_MODE, &oldCullFace);
-
-    // We need less than or equal, because both the skybox and the unrendered
-    // pixels will be at the maximum z-buffer value.
-    glDepthFunc(GL_LEQUAL);
-
-    // We show the front rather than the back because we're inside the cube now.
-    glCullFace(GL_FRONT);
-
-    // Render the skybox
-    glBindVertexArray(vaoId);
-    int count = sizeof(skyboxCubeVertices) / (3 * sizeof(float));
-    glDrawArrays(GL_TRIANGLES, 0, count);
-
-    // Restore the old face culling settings.
-    glDepthFunc(oldDepthFunc);
-    glCullFace(oldCullFace);
-}
-
-} // namespace PBR
+} // namespace PBR::skybox

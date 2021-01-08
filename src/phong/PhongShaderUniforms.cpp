@@ -23,8 +23,8 @@ void writeUniformsToShaderProgram(const PhongShaderUniforms& uniforms, ShaderPro
     shaderProgram.setUniform("lightingInfo.pointLightPositions", uniforms.lightingInfo.pointLightPositions);
     shaderProgram.setUniform("lightingInfo.pointLightColours", uniforms.lightingInfo.pointLightColours);
 
-    if (uniforms.colour) {
-        shaderProgram.setUniform("surfaceColour", uniforms.colour.value());
+    if (uniforms.material.colour.has_value()) {
+        shaderProgram.setUniform("surfaceColour", uniforms.material.colour.value());
     }
 
     if (uniforms.textureId) {

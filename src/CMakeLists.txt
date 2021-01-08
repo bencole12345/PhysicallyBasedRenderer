@@ -1,5 +1,13 @@
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PhysicallyBasedRenderer_SOURCE_DIR}/include/**/*.h")
 
+# Avoid "file has no symbols" warnings for files with nothing in the .cpp file on MacOS
+if (APPLE)
+    set(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+    set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+endif()
+
 add_library(PBR
         core/Camera.cpp
         core/PointLightSource.cpp
@@ -8,15 +16,25 @@ add_library(PBR
         core/Scene.cpp
         core/SceneObject.cpp
         core/ShaderProgram.cpp
-        core/Skybox.cpp
         core/Texture.cpp
         core/VertexData.cpp
         core/Window.cpp
+        phong/PhongMaterial.cpp
         phong/PhongRenderer.cpp
+        phong/PhongScene.cpp
+        phong/PhongSceneObject.cpp
         phong/PhongShaderUniforms.cpp
+        physically_based/PhysicallyBasedMaterial.cpp
+        physically_based/PhysicallyBasedRenderer.cpp
+        physically_based/PhysicallyBasedScene.cpp
+        physically_based/PhysicallyBasedSceneObject.cpp
+        physically_based/PhysicallyBasedShaderUniforms.cpp
         scene_objects/Cube.cpp
         scene_objects/CustomObject.cpp
         scene_objects/Plane.cpp
+        scene_objects/Shapes.cpp
+        skybox/Skybox.cpp
+        skybox/SkyboxRenderer.cpp
         ${HEADER_LIST})
 
 target_include_directories(PBR
@@ -33,10 +51,11 @@ if (APPLE)
 endif()
 
 set(PBR_PRIVATE_LINK_DEPENDENCIES
-        ${BOOST_FUNCTIONAL_INCLUDE_DIRS}
         glfw
         GLEW::GLEW
         tinyobjloader::tinyobjloader)
+
+target_include_directories(PBR PRIVATE ${BOOST_FUNCTIONAL_INCLUDE_DIRS})
 
 target_link_libraries(PBR PUBLIC ${PBR_PUBLIC_LINK_DEPENDENCIES}
                           PRIVATE ${PBR_PRIVATE_LINK_DEPENDENCIES})

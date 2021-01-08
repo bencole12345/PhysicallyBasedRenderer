@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,8 +22,6 @@ namespace PBR {
 Window::Window(const std::string& title, int width, int height)
         :window()
 {
-    assert(GLFWCallbackWrapper::isCurrentlyUnbound() && "Cannot create multiple Window instances at the same time.");
-
     if (!glfwInit()) {
         std::cerr << "Failed to initialise GLFW." << std::endl;
         exit(1);
@@ -43,9 +42,6 @@ Window::Window(const std::string& title, int width, int height)
         exit(1);
     }
 
-    // Register this window with the callback wrapper
-    GLFWCallbackWrapper::bindWindow(this);
-
     // Set callbacks
     glfwSetKeyCallback(window, GLFWCallbackWrapper::keyboardCallback);
     glfwSetFramebufferSizeCallback(window, GLFWCallbackWrapper::frameBufferResizeCallback);
@@ -60,112 +56,62 @@ Window::Window(const std::string& title, int width, int height)
 
 Window::~Window()
 {
-    GLFWCallbackWrapper::unbindWindow();
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
-void Window::loopUntilClosed(std::shared_ptr<Renderer> renderer, std::shared_ptr<Scene> scene)
-{
-    // Compute aspect ratio
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    float aspectRatio = (float) width / (float) height;
-
-    glm::vec3 backgroundColour = scene->getBackgroundColour();
-    glClearColor(backgroundColour.r, backgroundColour.g, backgroundColour.b, 1.0f);
-
-    RendererDriver driver(std::move(renderer), aspectRatio, std::move(scene));
-    GLFWCallbackWrapper::bindRendererDriver(&driver);
-
-    double previousTime = glfwGetTime();
-
-    // TODO: Cap this to target FPS
-    while (!glfwWindowShouldClose(window)) {
-
-        // Compute dt
-        double currentTime = glfwGetTime();
-        float dt = (float) (currentTime - previousTime);
-
-        // Poll events and trigger callbacks
-        glfwPollEvents();
-
-        // Update the renderer driver's state
-        driver.update(dt);
-
-        // Render the scene
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        driver.render((float) currentTime);
-
-        // Swap the buffers to make the render visible
-        glfwSwapBuffers(window);
-
-        previousTime = currentTime;
-    }
-
-    GLFWCallbackWrapper::unbindRendererDriver();
-}
-
 // These must be present to avoid a linker error
-Window* Window::GLFWCallbackWrapper::s_window = nullptr;
-RendererDriver* Window::GLFWCallbackWrapper::s_rendererDriver = nullptr;
+std::optional<GLFWCallbackWrapper::KeyboardCallback> GLFWCallbackWrapper::s_keyboardCallback;
+std::optional<GLFWCallbackWrapper::FrameBufferResizeCallback> GLFWCallbackWrapper::s_frameBufferResizeCallback;
+std::optional<GLFWCallbackWrapper::ErrorCallback> GLFWCallbackWrapper::s_errorCallback;
 
-bool Window::GLFWCallbackWrapper::isCurrentlyUnbound()
+void GLFWCallbackWrapper::bindKeyboardCallback(const KeyboardCallback& keyboardCallback)
 {
-    return s_window == nullptr && s_rendererDriver == nullptr;
+    assert(!s_keyboardCallback.has_value() && "Cannot bind multiple callbacks at once.");
+    s_keyboardCallback = keyboardCallback;
 }
 
-void Window::GLFWCallbackWrapper::bindWindow(Window* window)
+void GLFWCallbackWrapper::bindFrameBufferResizeCallback(const FrameBufferResizeCallback& frameBufferResizeCallback)
 {
-    assert(Window::GLFWCallbackWrapper::s_window == nullptr
-                   && "Cannot create multiple Window instances at the same time.");
-    Window::GLFWCallbackWrapper::s_window = window;
+    assert(!s_frameBufferResizeCallback.has_value() && "Cannot bind multiple callbacks at once.");
+    s_frameBufferResizeCallback = frameBufferResizeCallback;
 }
 
-void Window::GLFWCallbackWrapper::unbindWindow()
+void GLFWCallbackWrapper::bindErrorCallback(const ErrorCallback& errorCallback)
 {
-    Window::GLFWCallbackWrapper::s_window = nullptr;
+    assert(!s_errorCallback.has_value() && "Cannot bind multiple callbacks at once.");
+    s_errorCallback = s_errorCallback;
 }
 
-void Window::GLFWCallbackWrapper::bindRendererDriver(RendererDriver* driver)
+void GLFWCallbackWrapper::unbindAllCallbacks()
 {
-    Window::GLFWCallbackWrapper::s_rendererDriver = driver;
+    s_keyboardCallback.reset();
+    s_frameBufferResizeCallback.reset();
+    s_errorCallback.reset();
 }
 
-void Window::GLFWCallbackWrapper::unbindRendererDriver()
+void GLFWCallbackWrapper::keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    Window::GLFWCallbackWrapper::s_rendererDriver = nullptr;
-}
-
-void Window::GLFWCallbackWrapper::keyboardCallback(GLFWwindow*, int key, int scancode, int action, int mods)
-{
-    assert(s_window);
-    assert(s_rendererDriver);
-
-    // Close the window if they pressed escape
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(s_window->window, GLFW_TRUE);
+    if (s_keyboardCallback.has_value()) {
+        auto& callback = s_keyboardCallback.value();
+        callback(window, key, scancode, action, mods);
     }
-
-    // Forward the event to the renderer driver
-    s_rendererDriver->onKeyboardEvent(key, scancode, action, mods);
 }
 
-void Window::GLFWCallbackWrapper::frameBufferResizeCallback(GLFWwindow*, int width, int height)
+void GLFWCallbackWrapper::frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
-    assert(s_rendererDriver);
-
-    glViewport(0, 0, width, height);
-
-    float aspectRatio = (float) width / (float) height;
-    s_rendererDriver->setAspectRatio(aspectRatio);
+    if (s_frameBufferResizeCallback.has_value()) {
+        auto& callback = s_frameBufferResizeCallback.value();
+        callback(window, width, height);
+    }
 }
 
-void Window::GLFWCallbackWrapper::errorCallback(int error, const char* description)
+void GLFWCallbackWrapper::errorCallback(int error, const char* description)
 {
-    std::cout << "GLFW Error: " << description << std::endl;
-    glfwTerminate();
-    exit(1);
+    if (s_errorCallback.has_value()) {
+        auto& callback = s_errorCallback.value();
+        callback(error, description);
+    }
 }
 
 } // namespace PBR

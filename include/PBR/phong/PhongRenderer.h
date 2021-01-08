@@ -6,6 +6,8 @@
 #include "core/Renderer.h"
 #include "core/Scene.h"
 #include "core/ShaderProgram.h"
+#include "phong/PhongScene.h"
+#include "skybox/SkyboxRenderer.h"
 
 namespace PBR::phong {
 
@@ -13,7 +15,7 @@ namespace PBR::phong {
  * An implementation of the `Renderer` protocol that uses the Phong
  * shading model.
  */
-class PhongRenderer : public Renderer {
+class PhongRenderer : public Renderer<PhongScene> {
 private:
 
     /**
@@ -26,15 +28,17 @@ private:
      */
     ShaderProgram nonTexturedObjectShader;
 
-    // TODO: Consider putting a skybox shader here too
-    // (should the skybox rendering logic be implementation-specific?)
+    /**
+     * Used for rendering skyboxes.
+     */
+    skybox::SkyboxRenderer skyboxRenderer;
 
 public:
     PhongRenderer();
 
     void activate() override;
 
-    void render(std::shared_ptr<Scene> scene, const Camera& camera, double time) override;
+    void render(std::shared_ptr<PhongScene> scene, const Camera& camera, double time) override;
 };
 
 } // namespace PBR::phong

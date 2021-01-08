@@ -1,6 +1,7 @@
 #include "phong/PhongRenderer.h"
 
 #include <optional>
+#include <string_view>
 
 #define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl3.h>
@@ -11,18 +12,26 @@
 #include "core/Camera.h"
 #include "core/Scene.h"
 #include "core/ShaderProgram.h"
+#include "phong/PhongScene.h"
 #include "phong/PhongShaderUniforms.h"
+#include "skybox/Skybox.h"
+#include "skybox/SkyboxRenderer.h"
 
-#define TEXTURED_OBJECT_VERTEX_SHADER "src/shaders/phong/phong_textured.vert"
-#define TEXTURED_OBJECT_FRAGMENT_SHADER "src/shaders/phong/phong_textured.frag"
-#define UNTEXTURED_OBJECT_VERTEX_SHADER "src/shaders/phong/phong_untextured.vert"
-#define UNTEXTURED_OBJECT_FRAGMENT_SHADER "src/shaders/phong/phong_untextured.frag"
+namespace {
+
+constexpr std::string_view TEXTURED_OBJECT_VERTEX_SHADER = "src/phong/shaders/phong_textured.vert";
+constexpr std::string_view TEXTURED_OBJECT_FRAGMENT_SHADER = "src/phong/shaders/phong_textured.frag";
+constexpr std::string_view UNTEXTURED_OBJECT_VERTEX_SHADER = "src/phong/shaders/phong_untextured.vert";
+constexpr std::string_view UNTEXTURED_OBJECT_FRAGMENT_SHADER = "src/phong/shaders/phong_untextured.frag";
+
+} // anonymous namespace
 
 namespace PBR::phong {
 
 PhongRenderer::PhongRenderer()
-    : texturedObjectShader(TEXTURED_OBJECT_VERTEX_SHADER, TEXTURED_OBJECT_FRAGMENT_SHADER),
-      nonTexturedObjectShader(UNTEXTURED_OBJECT_VERTEX_SHADER, UNTEXTURED_OBJECT_FRAGMENT_SHADER)
+        :texturedObjectShader(TEXTURED_OBJECT_VERTEX_SHADER, TEXTURED_OBJECT_FRAGMENT_SHADER),
+         nonTexturedObjectShader(UNTEXTURED_OBJECT_VERTEX_SHADER, UNTEXTURED_OBJECT_FRAGMENT_SHADER),
+         skyboxRenderer()
 {
 }
 
@@ -37,45 +46,48 @@ void PhongRenderer::activate()
     glFrontFace(GL_CCW);
 }
 
-void PhongRenderer::render(std::shared_ptr<Scene> scene, const Camera& camera, double time)
+void PhongRenderer::render(std::shared_ptr<PhongScene> scene, const Camera& camera, double time)
 {
     // Render each object in the scene
     for (const auto& object : scene->getSceneObjectsList()) {
 
+        assert((object->hasTexture() || object->material.colour.has_value())
+                       && "Objects must either have a colour or texture.");
+
         // Select the shader program that we are going to use
         ShaderProgram& shaderProgram = object->hasTexture()
-                ? texturedObjectShader
-                : nonTexturedObjectShader;
+                                       ? texturedObjectShader
+                                       : nonTexturedObjectShader;
 
         // Enable the shader program
         glUseProgram(shaderProgram.id());
 
         // Write the uniforms to the shader
         PhongShaderUniforms uniforms{
-            .modelMatrix = object->getModelMatrix(),
-            .viewMatrix = camera.getViewMatrix(),
-            .projectionMatrix = camera.getProjectionMatrix(),
-            .cameraPosition = camera.position(),
-            .material = object->material,
-            .lightingInfo = LightingInfo{
-                .ambientLight = scene->getAmbientLight(),
-                .pointLightPositions = scene->getLightPositions(),
-                .pointLightColours = scene->getLightColours()
-            },
-            .textureId = object->hasTexture() ? std::optional<unsigned int>(object->texture->get()->id()) : std::nullopt,
-            .colour = object->hasConstantColour() ? std::optional<glm::vec3>(object->colour.value()) : std::nullopt
+                .modelMatrix = object->getModelMatrix(),
+                .viewMatrix = camera.getViewMatrix(),
+                .projectionMatrix = camera.getProjectionMatrix(),
+                .cameraPosition = camera.position(),
+                .material = object->material,
+                .lightingInfo = LightingInfo{
+                        .ambientLight = scene->getAmbientLight(),
+                        .pointLightPositions = scene->getLightPositions(),
+                        .pointLightColours = scene->getLightColours()
+                },
+                .textureId = object->hasTexture() ? std::optional<unsigned int>(object->texture->get()->id())
+                                                  : std::nullopt,
         };
         writeUniformsToShaderProgram(uniforms, shaderProgram);
 
         // Draw the object
         glBindVertexArray(object->vertexData->getVaoId());
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->vertexData->getEboId());
-        glDrawElements(GL_TRIANGLES, object->vertexData->verticesCount(), GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_TRIANGLES, object->vertexData->verticesCount(), GL_UNSIGNED_INT, (void*) 0);
     }
 
     // Render the skybox, if the scene has one
     if (scene->hasSkybox()) {
-        scene->getSkybox()->draw(camera);
+        skyboxRenderer.renderSkybox(scene->getSkybox(), camera);
     }
 }
 

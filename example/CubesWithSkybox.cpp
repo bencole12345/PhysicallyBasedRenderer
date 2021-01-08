@@ -1,50 +1,49 @@
 #include <string>
 #include <PBR/PBR.h>
 
-void loadScene(std::shared_ptr<PBR::Scene>* scene)
+using namespace PBR;
+using namespace PBR::phong;
+
+void loadScene(std::shared_ptr<PhongScene>* scene)
 {
     // Create the untextured orange cube
-    PBR::Material material{.kD = 0.6f, .kS = 0.4f, .specularN = 2.0f};
+    PhongMaterial material{.kD = 0.6f, .kS = 0.4f, .specularN = 2.0f, .colour = glm::vec3(1.0f, 0.5f, 0.2f)};
     glm::vec3 position(2.0f, 0.0f, 0.0f);
     glm::vec3 orientation(0.0f);
     float scale = 1.0f;
-    glm::vec3 colour(1.0f, 0.5f, 0.2f);
-    std::shared_ptr<PBR::SceneObject> colouredCube(
-            new PBR::scene_objects::Cube(position,
+    std::shared_ptr<PhongSceneObject> colouredCube(
+            new scene_objects::Cube(position,
                                     orientation,
                                     scale,
-                                    material,
-                                    colour));
+                                    material));
 
     // Create the textured cube
     material = {.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f};
     position = glm::vec3(-2.0f, 0.0f, 0.0f);
     orientation = glm::vec3(0.5f, 0.5f, 0.5f);
     scale = 2.0f;
-    std::shared_ptr<PBR::Texture> texture(
-            new PBR::Texture("example/resources/textures/cookie.jpg"));
-    std::shared_ptr<PBR::SceneObject> texturedCube(
-            new PBR::scene_objects::Cube(position,
+    std::shared_ptr<Texture> texture(
+            new Texture("example/resources/textures/cookie.jpg"));
+    std::shared_ptr<PhongSceneObject> texturedCube(
+            new scene_objects::Cube(position,
                                     orientation,
                                     scale,
                                     material,
                                     texture));
 
     // Create the plane
-    material = {.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f};
+    material = {.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f, .colour = glm::vec3(0.3f, 0.3f, 0.3f)};
     position = glm::vec3(0.0f, -2.0f, 0.0f);
     orientation = glm::vec3(0.0f);
     glm::vec2 dimensions(20.0f, 20.0f);
-    colour = glm::vec3(0.3f, 0.3f, 0.3f);
-    std::shared_ptr<PBR::SceneObject> plane(
-            new PBR::scene_objects::Plane(position,
+    std::shared_ptr<PhongSceneObject> plane(
+            new scene_objects::Plane(position,
                                      orientation,
                                      dimensions,
-                                     material,
-                                     colour));
+                                     material));
 
     // All objects
-    std::vector<std::shared_ptr<PBR::SceneObject>> sceneObjects{
+    std::vector<std::shared_ptr<PhongSceneObject>> sceneObjects{
             colouredCube,
             texturedCube,
 
@@ -57,9 +56,9 @@ void loadScene(std::shared_ptr<PBR::Scene>* scene)
     glm::vec3 ambientLight(0.5f, 0.5f, 0.5f);
 
     // Point lights
-    std::vector<PBR::PointLightSource> lights{
-            PBR::PointLightSource(glm::vec3(2.0f, -1.0f, 2.0f), glm::vec3(1.0f)),
-            PBR::PointLightSource(glm::vec3(-1.0f, 5.0f, -1.0f), glm::vec3(1.0f))
+    std::vector<PointLightSource> lights{
+            PointLightSource(glm::vec3(2.0f, -1.0f, 2.0f), glm::vec3(1.0f)),
+            PointLightSource(glm::vec3(-1.0f, 5.0f, -1.0f), glm::vec3(1.0f))
     };
 
     // Set up the skybox
@@ -71,33 +70,33 @@ void loadScene(std::shared_ptr<PBR::Scene>* scene)
             "example/resources/skyboxes/ocean_with_mountains/front.jpg",
             "example/resources/skyboxes/ocean_with_mountains/back.jpg"
     };
-    std::shared_ptr<PBR::Skybox> skybox(new PBR::Skybox(skyboxTextures));
+    std::shared_ptr<skybox::Skybox> skybox(new skybox::Skybox(skyboxTextures));
 
     // Create the scene
-    *scene = std::make_shared<PBR::Scene>(sceneObjects,
-                                     ambientLight,
-                                     lights,
-                                     skybox);
+    *scene = std::make_shared<PhongScene>(sceneObjects,
+                                          ambientLight,
+                                          lights,
+                                          skybox);
 }
 
 int main()
 {
-    std::string title = "Physically Based Renderer: Cubes with Skybox Example";
+    std::string title = "Physically Based Renderer: Cubes with Skybox Example [Phong]";
     int width = 800;
     int height = 600;
 
     // Create a window
-    PBR::Window window(title, width, height);
+    Window window(title, width, height);
 
     // Create a scene
-    std::shared_ptr<PBR::Scene> scene;
+    std::shared_ptr<PhongScene> scene;
     loadScene(&scene);
 
     // Create a Phong renderer
-    std::shared_ptr<PBR::Renderer> renderer(new PBR::phong::PhongRenderer());
+    std::shared_ptr<PhongRenderer> renderer(new PhongRenderer());
 
     // Run the main loop
-    window.loopUntilClosed(renderer, scene);
+    window.loopUntilClosed<PhongScene>(renderer, scene);
 
     return 0;
 }
