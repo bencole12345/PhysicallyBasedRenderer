@@ -50,9 +50,9 @@ public:
  */
 class GLFWCallbackWrapper {
 public:
-    typedef std::function<void(GLFWwindow*, int, int, int, int)> KeyboardCallback;
-    typedef std::function<void(GLFWwindow*, int, int)> FrameBufferResizeCallback;
-    typedef std::function<void(int, const char*)> ErrorCallback;
+    using KeyboardCallback = std::function<void(GLFWwindow*, int, int, int, int)>;
+    using FrameBufferResizeCallback = std::function<void(GLFWwindow*, int, int)>;
+    using ErrorCallback = std::function<void(int, const char*)>;
 
 private:
     static std::optional<KeyboardCallback> s_keyboardCallback;

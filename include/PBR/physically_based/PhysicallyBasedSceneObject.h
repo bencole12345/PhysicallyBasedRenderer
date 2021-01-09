@@ -6,7 +6,7 @@
 
 namespace PBR::physically_based {
 
-typedef SceneObject<PhysicallyBasedMaterial> PhysicallyBasedSceneObject;
+using PhysicallyBasedSceneObject = SceneObject<PhysicallyBasedMaterial>;
 
 } // namespace PBR::physically_based
 

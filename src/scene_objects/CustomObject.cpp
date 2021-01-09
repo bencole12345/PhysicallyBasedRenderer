@@ -19,7 +19,7 @@
 
 namespace {
 
-typedef struct vertex_data_t {
+struct vertex_data_t {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texcoord;
@@ -29,7 +29,7 @@ typedef struct vertex_data_t {
         return position == other.position && normal == other.normal && texcoord == other.texcoord;
     }
 
-} vertex_data_t;
+};
 
 struct VertexDataHasher {
     size_t operator()(const vertex_data_t& vertexData) const

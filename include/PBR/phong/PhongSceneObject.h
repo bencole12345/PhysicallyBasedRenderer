@@ -6,7 +6,7 @@
 
 namespace PBR::phong {
 
-typedef SceneObject<PhongMaterial> PhongSceneObject;
+using PhongSceneObject = SceneObject<PhongMaterial>;
 
 } // namespace PBR::phong
 
