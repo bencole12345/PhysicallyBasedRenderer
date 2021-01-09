@@ -2,13 +2,14 @@
 #define PHYSICALLYBASEDRENDERER_CUBE
 
 #include <memory>
+#include <optional>
 
 #include <glm/vec3.hpp>
 
-#include "core/Material.h"
 #include "core/SceneObject.h"
 #include "core/Texture.h"
 #include "core/VertexData.h"
+#include "scene_objects/Shapes.h"
 
 namespace PBR::scene_objects {
 
@@ -16,24 +17,28 @@ namespace PBR::scene_objects {
  * A cube that lazily instantiates and shares the same vertex data
  * between all instances.
  */
-class Cube : public SceneObject {
-private:
-    static std::shared_ptr<VertexData> s_texturedVertexData;
-    static std::shared_ptr<VertexData> s_untexturedVertexData;
-    static std::shared_ptr<VertexData> getTexturedVertexData();
-    static std::shared_ptr<VertexData> getUntexturedVertexData();
-
+template<class MaterialType>
+class Cube : public SceneObject<MaterialType> {
 public:
     /**
-     * Create a textured cube.
+     * Construct a cube
+     *
+     * @param pos The position of the centre of the cube in world space
+     * @param orientation The orientation of the cube
+     * @param scale The size of the sides of the cube
+     * @param material The material of the cube
+     * @param texture (Optional) The texture of the cube
      */
-    Cube(glm::vec3 pos, glm::vec3 orientation, float scale, Material material, const std::shared_ptr<Texture>& texture);
-
-    /**
-     * Create an untextured cube.
-     */
-    Cube(glm::vec3 pos, glm::vec3 orientation, float scale, Material material, glm::vec3 colour);
+    Cube(glm::vec3 pos, glm::vec3 orientation, float scale, MaterialType material,
+         const std::optional<std::shared_ptr<Texture>>& texture = std::nullopt);
 };
+
+template<class MaterialType>
+Cube<MaterialType>::Cube(glm::vec3 pos, glm::vec3 orientation, float scale, MaterialType material,
+                         const std::optional<std::shared_ptr<Texture>>& texture)
+        : SceneObject<MaterialType>(pos, orientation, glm::vec3(scale), material,
+                                    texture.has_value() ? Shapes::texturedCube() : Shapes::untexturedCube(), texture)
+{ }
 
 } // namespace PBR::scene_objects
 

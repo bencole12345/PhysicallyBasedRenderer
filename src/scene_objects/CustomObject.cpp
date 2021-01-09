@@ -13,11 +13,9 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include "core/Material.h"
+#include "phong/PhongMaterial.h"
 #include "core/Texture.h"
 #include "core/VertexData.h"
-
-namespace PBR::scene_objects {
 
 namespace {
 
@@ -49,6 +47,10 @@ struct VertexDataHasher {
     }
 };
 
+} // anonymous namespace
+
+namespace PBR::scene_objects {
+
 std::shared_ptr<VertexData> loadObjFromPath(std::string_view objPath, bool textured)
 {
     tinyobj::ObjReader reader;
@@ -71,6 +73,9 @@ std::shared_ptr<VertexData> loadObjFromPath(std::string_view objPath, bool textu
     const auto& attrib = reader.GetAttrib();
     const auto& shapes = reader.GetShapes();
     const auto& materials = reader.GetMaterials();
+
+    assert(!attrib.vertices.empty());
+    assert(!attrib.normals.empty());
 
     // Buffers to store the loaded data
     std::shared_ptr<std::vector<float>> vertexDataBuffer(new std::vector<float>());
@@ -137,21 +142,6 @@ std::shared_ptr<VertexData> loadObjFromPath(std::string_view objPath, bool textu
     }
 
     return std::make_shared<VertexData>(vertexDataBuffer, indicesBuffer, textured);
-}
-
-} // anonymous namespace
-
-CustomObject::CustomObject(std::string_view objPath, std::string_view texturePath, glm::vec3 pos, glm::vec3 orientation,
-                           const Material& material, float scale)
-        :SceneObject(pos, orientation, glm::vec3(scale), material, loadObjFromPath(objPath, true),
-                     std::shared_ptr<Texture>(new Texture(texturePath)))
-{
-}
-
-CustomObject::CustomObject(std::string_view objPath, glm::vec3 colour, glm::vec3 pos, glm::vec3 orientation,
-                           const Material& material, float scale)
-        :SceneObject(pos, orientation, glm::vec3(scale), material, loadObjFromPath(objPath, false), colour)
-{
 }
 
 } // namespace PBR::scene_objects

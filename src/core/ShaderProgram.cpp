@@ -7,14 +7,14 @@
 #include <vector>
 
 #define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+
+#include "core/Texture.h"
+#include "skybox/Skybox.h"
 
 namespace {
 
@@ -82,14 +82,19 @@ ShaderProgram::ShaderProgram(std::string_view vertexShaderLocation, std::string_
     glDeleteShader(fragmentShader);
 }
 
+ShaderProgram::~ShaderProgram()
+{
+    glDeleteProgram(shaderProgramId);
+}
+
 unsigned int ShaderProgram::id() const
 {
     return shaderProgramId;
 }
 
-ShaderProgram::~ShaderProgram()
+void ShaderProgram::resetUniforms()
 {
-    glDeleteProgram(shaderProgramId);
+    texturesCount = 0;
 }
 
 void ShaderProgram::setUniform(const std::string& name, float value)
@@ -128,10 +133,32 @@ void ShaderProgram::setUniform(const std::string& name, const glm::mat4& matrix)
     glUniformMatrix4fv(position, 1, GL_FALSE, &matrix[0][0]);
 }
 
+void ShaderProgram::setUniform(const std::string& name, const std::vector<float>& values)
+{
+    int position = glGetUniformLocation(shaderProgramId, name.c_str());
+    glUniform1fv(position, values.size(), &values[0]);
+}
+
 void ShaderProgram::setUniform(const std::string& name, const std::vector<glm::vec3>& values)
 {
     int position = glGetUniformLocation(shaderProgramId, name.c_str());
     glUniform3fv(position, values.size(), reinterpret_cast<const GLfloat*>(&values[0]));
+}
+
+void ShaderProgram::setUniform(const std::string& name, const std::shared_ptr<Texture>& texture)
+{
+    unsigned int textureUnit = texturesCount++;
+    glActiveTexture(GL_TEXTURE0 + textureUnit);
+    glBindTexture(GL_TEXTURE_2D, texture->id());
+    setUniform(name, (int)textureUnit);
+}
+
+void ShaderProgram::setUniform(const std::string& name, const std::shared_ptr<skybox::Skybox>& skybox)
+{
+    unsigned int textureUnit = texturesCount++;
+    glActiveTexture(GL_TEXTURE0 + textureUnit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->getTextureId());
+    setUniform(name, (int)textureUnit);
 }
 
 } // namespace PBR
