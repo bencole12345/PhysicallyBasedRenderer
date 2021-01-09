@@ -14,6 +14,7 @@
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
+#include "core/ErrorCodes.h"
 #include "core/Renderer.h"
 #include "core/RendererDriver.h"
 #include "core/Scene.h"
@@ -121,7 +122,7 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer<SceneType>> renderer, std:
         [](int error, const char *description) {
             std::cout << "GLFW Error: " << description << std::endl;
             glfwTerminate();
-            exit(1);
+            exit((int) ExitCodes::GlfwError);
         }
     );
 

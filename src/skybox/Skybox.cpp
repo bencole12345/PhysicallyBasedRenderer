@@ -9,6 +9,8 @@
 
 #include <stb_image.h>
 
+#include "core/ErrorCodes.h"
+
 namespace {
 
 constexpr float skyboxCubeVertices[] = {
@@ -70,14 +72,10 @@ namespace PBR::skybox {
 Skybox::Skybox(const std::vector<std::string_view>& faceTextures)
         :textureId(), vaoId(), vboId()
 {
+    assert(faceTextures.size() == 6 && "Skybox constructor expects exactly six file paths");
+
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-
-    if (faceTextures.size() != 6) {
-        std::cerr << "Skybox constructor expected vector of 6 file paths but instead got length: "
-                  << faceTextures.size() << std::endl;
-        exit(1);
-    }
 
     // Load all six textures
     for (unsigned int i = 0; i < 6; i++) {
@@ -95,7 +93,7 @@ Skybox::Skybox(const std::vector<std::string_view>& faceTextures)
 
         else {
             std::cerr << "Failed to load texture for skybox: " << fileName << std::endl;
-            exit(1);
+            exit((int) ErrorCodes::BadTexture);
         }
     }
 

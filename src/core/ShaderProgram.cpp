@@ -13,8 +13,11 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+#include "core/ErrorCodes.h"
 #include "core/Texture.h"
 #include "skybox/Skybox.h"
+
+namespace PBR {
 
 namespace {
 
@@ -44,15 +47,13 @@ unsigned int loadAndCompileShader(std::string_view shaderLocation, GLenum shader
         char infoLog[bufferSize];
         glGetShaderInfoLog(shaderId, bufferSize, nullptr, infoLog);
         std::cerr << "Shader error: " << infoLog << std::endl;
-        exit(1);
+        exit((int) ErrorCodes::BadShaderProgram);
     }
 
     return shaderId;
 }
 
 } // anonymous namespace
-
-namespace PBR {
 
 ShaderProgram::ShaderProgram(std::string_view vertexShaderLocation, std::string_view fragmentShaderLocation)
         :shaderProgramId(glCreateProgram())
@@ -74,7 +75,7 @@ ShaderProgram::ShaderProgram(std::string_view vertexShaderLocation, std::string_
         char infoLog[bufferSize];
         glGetProgramInfoLog(shaderProgramId, bufferSize, nullptr, infoLog);
         std::cerr << "Error linking shader programs: " << infoLog << std::endl;
-        exit(2);
+        exit((int) ErrorCodes::FailedToLinkShaders);
     }
 
     // We don't need the individual shaders any more

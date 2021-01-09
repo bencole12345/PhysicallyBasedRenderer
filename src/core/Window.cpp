@@ -14,6 +14,7 @@
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
+#include "core/ErrorCodes.h"
 #include "core/Renderer.h"
 #include "core/RendererDriver.h"
 
@@ -24,7 +25,7 @@ Window::Window(const std::string& title, int width, int height)
 {
     if (!glfwInit()) {
         std::cerr << "Failed to initialise GLFW." << std::endl;
-        exit(1);
+        exit((int) ErrorCodes::GlfwError);
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -39,7 +40,7 @@ Window::Window(const std::string& title, int width, int height)
     if (!window) {
         glfwTerminate();
         std::cerr << "Failed to create a window." << std::endl;
-        exit(1);
+        exit((int) ErrorCodes::GlfwError);
     }
 
     // Set callbacks

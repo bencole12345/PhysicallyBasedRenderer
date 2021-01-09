@@ -2,6 +2,7 @@
 #define PHYSICALLYBASEDRENDERER_CORE
 
 #include "core/Camera.h"
+#include "core/ErrorCodes.h"
 #include "core/PointLightSource.h"
 #include "core/Renderer.h"
 #include "core/RendererDriver.h"

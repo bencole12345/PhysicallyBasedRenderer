@@ -10,6 +10,7 @@ endif()
 
 add_library(PBR
         core/Camera.cpp
+        core/ErrorCodes.cpp
         core/PointLightSource.cpp
         core/Renderer.cpp
         core/RendererDriver.cpp

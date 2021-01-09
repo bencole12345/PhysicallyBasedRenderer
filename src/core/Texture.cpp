@@ -12,6 +12,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "core/ErrorCodes.h"
+
 namespace PBR {
 
 Texture::Texture(std::string_view texturePath, GLenum wrappingMode, GLenum filteringMode)
@@ -23,8 +25,7 @@ Texture::Texture(std::string_view texturePath, GLenum wrappingMode, GLenum filte
 
     if (!data) {
         std::cerr << "Failed to load texture: " << texturePath << std::endl;
-        // TODO: Add exit codes enum
-        exit(1);
+        exit((int) ErrorCodes::BadTexture);
     }
 
     // Create an OpenGL texture object

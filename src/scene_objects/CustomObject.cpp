@@ -13,7 +13,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include "phong/PhongMaterial.h"
+#include "core/ErrorCodes.h"
 #include "core/Texture.h"
 #include "core/VertexData.h"
 
@@ -63,7 +63,7 @@ std::shared_ptr<VertexData> loadObjFromPath(std::string_view objPath, bool textu
         if (!reader.Error().empty()) {
             std::cerr << "TinyObjReader: " << reader.Error();
         }
-        exit(1);
+        exit((int) ErrorCodes::BadObjFile);
     }
     else if (!reader.Warning().empty()) {
         std::cerr << "TinyObjReader: " << reader.Warning();
