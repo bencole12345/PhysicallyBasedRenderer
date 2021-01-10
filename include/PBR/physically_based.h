@@ -1,6 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_PHYSICALLY_BASED
 #define PHYSICALLYBASEDRENDERER_PHYSICALLY_BASED
 
+#include "physically_based/FresnelValues.h"
 #include "physically_based/PhysicallyBasedMaterial.h"
 #include "physically_based/PhysicallyBasedRenderer.h"
 #include "physically_based/PhysicallyBasedScene.h"

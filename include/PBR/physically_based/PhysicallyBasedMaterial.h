@@ -1,7 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_PHYSICALLYBASEDMATERIAL
 #define PHYSICALLYBASEDRENDERER_PHYSICALLYBASEDMATERIAL
 
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 
 namespace PBR::physically_based {
 

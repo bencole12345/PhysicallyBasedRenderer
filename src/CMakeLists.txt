@@ -25,6 +25,7 @@ add_library(PBR
         phong/PhongScene.cpp
         phong/PhongSceneObject.cpp
         phong/PhongShaderUniforms.cpp
+        physically_based/FresnelValues.cpp
         physically_based/PhysicallyBasedMaterial.cpp
         physically_based/PhysicallyBasedRenderer.cpp
         physically_based/PhysicallyBasedScene.cpp
@@ -43,6 +44,7 @@ target_compile_features(PBR PRIVATE cxx_std_17)
 target_include_directories(PBR
         PUBLIC
                 ../include
+                ${GLM_INCLUDE_DIRS}
         PRIVATE
                 ${STB_INCLUDE_DIRS}
                 ${OPENGL_INCLUDE_DIR}

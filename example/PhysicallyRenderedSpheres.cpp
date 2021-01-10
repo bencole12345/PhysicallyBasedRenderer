@@ -23,7 +23,7 @@ void loadScene(std::shared_ptr<PhysicallyBasedScene>* scene)
             glm::vec3 albedo(0.25f + (float) i * 0.7f / 3.0f, 0.6f - 0.1f * i, 0.9f - (float) j * 0.4f / 3.0f);
             float roughness = 0.1f + (float) j * 0.7f / 3.0f;
             float metallic = 0.1f + (float) i * 0.7f / 3.0f;
-            glm::vec3 F0(0.04f);
+            glm::vec3 F0 = FresnelValues::PlasticLow;
             PhysicallyBasedMaterial material{albedo, roughness, metallic, F0};
             std::shared_ptr<PhysicallyBasedSceneObject> object(
                     new scene_objects::CustomObject(objPath, position, orientation, material, scale));
