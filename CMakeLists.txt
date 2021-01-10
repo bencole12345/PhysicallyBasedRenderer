@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.12)
 
 project(PhysicallyBasedRenderer
         VERSION 0.1
         DESCRIPTION "A library for physically based rendering using OpenGL")
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
+find_package(GLEW REQUIRED)
 find_path(BOOST_FUNCTIONAL_INCLUDE_DIRS "boost/functional.hpp")
 find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)

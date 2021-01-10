@@ -4,11 +4,10 @@
 #include <string>
 #include <string_view>
 
+#include <GL/glew.h>
+
 #include "core/Camera.h"
 #include "skybox/Skybox.h"
-
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
 
 namespace {
 

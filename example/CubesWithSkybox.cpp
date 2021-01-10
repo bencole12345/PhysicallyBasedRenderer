@@ -1,13 +1,18 @@
+#include <filesystem>
 #include <string>
 #include <PBR/PBR.h>
 
 using namespace PBR;
 using namespace PBR::phong;
 
+namespace fs = std::filesystem;
+
 void loadScene(std::shared_ptr<PhongScene>* scene)
 {
     // Create the untextured orange cube
-    PhongMaterial material{.kD = 0.6f, .kS = 0.4f, .specularN = 2.0f, .colour = glm::vec3(1.0f, 0.5f, 0.2f)};
+    float kD = 0.6f, kS = 0.4f, specularN = 2.0f;
+    glm::vec3 colour(1.0f, 0.5f, 0.2f);
+    PhongMaterial material{kD, kS, specularN, colour};
     glm::vec3 position(2.0f, 0.0f, 0.0f);
     glm::vec3 orientation(0.0f);
     float scale = 1.0f;
@@ -18,12 +23,15 @@ void loadScene(std::shared_ptr<PhongScene>* scene)
                                     material));
 
     // Create the textured cube
-    material = {.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f};
+    kD = 0.8f;
+    kS = 0.2f;
+    specularN = 1.0f;
+    material = {kD, kS, specularN};
     position = glm::vec3(-2.0f, 0.0f, 0.0f);
     orientation = glm::vec3(0.5f, 0.5f, 0.5f);
     scale = 2.0f;
-    std::shared_ptr<Texture> texture(
-            new Texture("example/resources/textures/cookie.jpg"));
+    fs::path texturePath = fs::current_path() / "example" / "resources" / "textures" / "cookie.jpg";
+    std::shared_ptr<Texture> texture(new Texture(texturePath));
     std::shared_ptr<PhongSceneObject> texturedCube(
             new scene_objects::Cube(position,
                                     orientation,
@@ -32,7 +40,8 @@ void loadScene(std::shared_ptr<PhongScene>* scene)
                                     texture));
 
     // Create the plane
-    material = {.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f, .colour = glm::vec3(0.3f, 0.3f, 0.3f)};
+    colour = glm::vec3(0.3f);
+    material = {kD, kS, specularN, colour};
     position = glm::vec3(0.0f, -2.0f, 0.0f);
     orientation = glm::vec3(0.0f);
     glm::vec2 dimensions(20.0f, 20.0f);
@@ -62,13 +71,14 @@ void loadScene(std::shared_ptr<PhongScene>* scene)
     };
 
     // Set up the skybox
-    std::vector<std::string_view> skyboxTextures{
-            "example/resources/skyboxes/ocean_with_mountains/right.jpg",
-            "example/resources/skyboxes/ocean_with_mountains/left.jpg",
-            "example/resources/skyboxes/ocean_with_mountains/top.jpg",
-            "example/resources/skyboxes/ocean_with_mountains/bottom.jpg",
-            "example/resources/skyboxes/ocean_with_mountains/front.jpg",
-            "example/resources/skyboxes/ocean_with_mountains/back.jpg"
+    fs::path oceanWithMountains = fs::current_path() / "example" / "resources" / "skyboxes" / "ocean_with_mountains";
+    std::vector<fs::path> skyboxTextures{
+            oceanWithMountains / "right.jpg",
+            oceanWithMountains / "left.jpg",
+            oceanWithMountains / "top.jpg",
+            oceanWithMountains / "bottom.jpg",
+            oceanWithMountains / "front.jpg",
+            oceanWithMountains / "back.jpg"
     };
     std::shared_ptr<skybox::Skybox> skybox(new skybox::Skybox(skyboxTextures));
 

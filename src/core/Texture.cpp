@@ -1,27 +1,26 @@
 #include "core/Texture.h"
 
+#include <filesystem>
 #include <iostream>
-#include <string_view>
 
-#define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include "core/ErrorCodes.h"
 
+namespace fs = std::filesystem;
+
 namespace PBR {
 
-Texture::Texture(std::string_view texturePath, GLenum wrappingMode, GLenum filteringMode)
+Texture::Texture(const fs::path& texturePath, GLenum wrappingMode, GLenum filteringMode)
     : textureId()
 {
     // Load the image
     int width, height, numChannels;
-    unsigned char *data = stbi_load(texturePath.data(), &width, &height, &numChannels, 0);
+    std::string path = texturePath.string();
+    unsigned char *data = stbi_load(path.c_str(), &width, &height, &numChannels, 0);
 
     if (!data) {
         std::cerr << "Failed to load texture: " << texturePath << std::endl;

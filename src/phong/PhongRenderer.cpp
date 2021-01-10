@@ -3,8 +3,7 @@
 #include <optional>
 #include <string_view>
 
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
@@ -64,18 +63,13 @@ void PhongRenderer::render(std::shared_ptr<PhongScene> scene, const Camera& came
 
         // Write the uniforms to the shader
         PhongShaderUniforms uniforms{
-                .modelMatrix = object->getModelMatrix(),
-                .viewMatrix = camera.getViewMatrix(),
-                .projectionMatrix = camera.getProjectionMatrix(),
-                .cameraPosition = camera.position(),
-                .material = object->material,
-                .lightingInfo = LightingInfo{
-                        .ambientLight = scene->getAmbientLight(),
-                        .pointLightPositions = scene->getLightPositions(),
-                        .pointLightColours = scene->getLightColours()
-                },
-                .textureId = object->hasTexture() ? std::optional<unsigned int>(object->texture->get()->id())
-                                                  : std::nullopt,
+                object->getModelMatrix(),
+                camera.getViewMatrix(),
+                camera.getProjectionMatrix(),
+                camera.position(),
+                object->material,
+                LightingInfo{scene->getAmbientLight(), scene->getLightPositions(), scene->getLightColours()},
+                object->hasTexture() ? std::optional<unsigned int>(object->texture->get()->id()) : std::nullopt,
         };
         writeUniformsToShaderProgram(uniforms, shaderProgram);
 

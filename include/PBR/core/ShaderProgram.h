@@ -1,8 +1,8 @@
 #ifndef PHYSICALLYBASEDRENDERER_SHADERPROGRAM
 #define PHYSICALLYBASEDRENDERER_SHADERPROGRAM
 
+#include <filesystem>
 #include <memory>
-#include <string_view>
 #include <vector>
 
 #include <glm/vec3.hpp>
@@ -33,7 +33,7 @@ private:
     unsigned int texturesCount{0};
 
 public:
-    ShaderProgram(std::string_view vertexShaderLocation, std::string_view fragmentShaderLocation);
+    ShaderProgram(const std::filesystem::path& vertexShaderLocation, const std::filesystem::path& fragmentShaderLocation);
     ~ShaderProgram();
 
     /**

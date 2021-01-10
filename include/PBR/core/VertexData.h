@@ -106,14 +106,14 @@ size_t VertexData::getPositionsOffset() const
 inline
 size_t VertexData::getNormalsOffset() const
 {
-    assert(hasNormals);
+    // assert(hasNormals);
     return normalsOffset;
 }
 
 inline
 size_t VertexData::getTextureCoordinatesOffset() const
 {
-    assert(hasTextureCoordinates);
+    // assert(hasTextureCoordinates);
     return textureCoordinatesOffset;
 }
 

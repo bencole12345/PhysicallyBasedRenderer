@@ -10,8 +10,8 @@
 #include "core/Renderer.h"
 #include "core/Scene.h"
 
-#define DEFAULT_MOVE_SPEED 2.0
-#define DEFAULT_TURN_SPEED 0.8
+#define DEFAULT_MOVE_SPEED 2.0f
+#define DEFAULT_TURN_SPEED 0.8f
 
 namespace PBR {
 
@@ -73,7 +73,7 @@ public:
 template<class SceneType>
 RendererDriver<SceneType>::RendererDriver(std::shared_ptr<Renderer<SceneType>> renderer, float aspectRatio,
                                           std::shared_ptr<SceneType> scene)
-        :camera(glm::vec3(0.0, 0.0, 5.0), aspectRatio), movementState(), moveSpeed(DEFAULT_MOVE_SPEED),
+        :camera(glm::vec3(0.0f, 0.0f, 5.0f), aspectRatio), movementState(), moveSpeed(DEFAULT_MOVE_SPEED),
          turnSpeed(DEFAULT_TURN_SPEED), renderer(std::move(renderer)), scene(std::move(scene))
 {
     this->renderer->activate();

@@ -45,17 +45,13 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
 
         // Write the uniforms to the shader
         PhysicallyBasedShaderUniforms uniforms{
-                .modelMatrix = object->getModelMatrix(),
-                .viewMatrix = camera.getViewMatrix(),
-                .projectionMatrix = camera.getProjectionMatrix(),
-                .cameraPosition = camera.position(),
-                .material = object->material,
-                .lightingInfo = PhysicallyBasedDirectLightingInfo{
-                        .lightPositions = scene->getLightPositions(),
-                        .lightColours = scene->getLightColours(),
-                        .intensities = scene->getLightIntensities()
-                },
-                .skybox = scene->hasSkybox() ? std::optional(scene->getSkybox()) : std::nullopt
+                object->getModelMatrix(),
+                camera.getViewMatrix(),
+                camera.getProjectionMatrix(),
+                camera.position(),
+                object->material,
+                PhysicallyBasedDirectLightingInfo{scene->getLightPositions(), scene->getLightColours(), scene->getLightIntensities()},
+                scene->hasSkybox() ? std::optional(scene->getSkybox()) : std::nullopt
         };
         writeUniformsToShaderProgram(uniforms, shaderProgram);
 

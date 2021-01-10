@@ -5,8 +5,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
 
 namespace PBR::phong {
 

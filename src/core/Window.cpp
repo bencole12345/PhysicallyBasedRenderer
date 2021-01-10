@@ -9,10 +9,8 @@
 #include <glm/vec3.hpp>
 
 #define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
-
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
 
 #include "core/ErrorCodes.h"
 #include "core/Renderer.h"
@@ -53,6 +51,14 @@ Window::Window(const std::string& title, int width, int height)
 
     // Helps to avoid screen tearing
     glfwSwapInterval(1);
+
+    // Use GLEW to load all the OpenGL stuff for us
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        glfwTerminate();
+        std::cerr << "Failed to initialise GLEW: " << glewGetErrorString(err) << std::endl;
+        exit((int) ErrorCodes::GlewError);
+    }
 }
 
 Window::~Window()

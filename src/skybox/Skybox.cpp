@@ -1,15 +1,17 @@
 #include "skybox/Skybox.h"
 
+#include <filesystem>
 #include <iostream>
-#include <string_view>
+#include <string>
 #include <vector>
 
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
 
 #include <stb_image.h>
 
 #include "core/ErrorCodes.h"
+
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -69,7 +71,7 @@ constexpr float skyboxCubeVertices[] = {
 
 namespace PBR::skybox {
 
-Skybox::Skybox(const std::vector<std::string_view>& faceTextures)
+Skybox::Skybox(const std::vector<fs::path>& faceTextures)
         :textureId(), vaoId(), vboId()
 {
     assert(faceTextures.size() == 6 && "Skybox constructor expects exactly six file paths");
@@ -80,8 +82,9 @@ Skybox::Skybox(const std::vector<std::string_view>& faceTextures)
     // Load all six textures
     for (unsigned int i = 0; i < 6; i++) {
         int width, height, numChannels;
-        std::string_view fileName = faceTextures[i];
-        unsigned char* data = stbi_load(fileName.data(), &width, &height, &numChannels, 0);
+        const fs::path filePath = faceTextures[i];
+        std::string pathString = filePath.string();
+        unsigned char* data = stbi_load(pathString.c_str(), &width, &height, &numChannels, 0);
 
         if (data) {
             // Copy to GPU
@@ -92,7 +95,7 @@ Skybox::Skybox(const std::vector<std::string_view>& faceTextures)
         }
 
         else {
-            std::cerr << "Failed to load texture for skybox: " << fileName << std::endl;
+            std::cerr << "Failed to load texture for skybox: " << filePath << std::endl;
             exit((int) ErrorCodes::BadTexture);
         }
     }

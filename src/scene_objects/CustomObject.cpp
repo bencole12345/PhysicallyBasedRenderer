@@ -1,7 +1,9 @@
 #include "scene_objects/CustomObject.h"
 
+#include <filesystem>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -16,6 +18,8 @@
 #include "core/ErrorCodes.h"
 #include "core/Texture.h"
 #include "core/VertexData.h"
+
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -51,12 +55,12 @@ struct VertexDataHasher {
 
 namespace PBR::scene_objects {
 
-std::shared_ptr<VertexData> loadObjFromPath(std::string_view objPath, bool textured)
+std::shared_ptr<VertexData> loadObjFromPath(const fs::path& objPath, bool textured)
 {
     tinyobj::ObjReader reader;
 
     // Parse the file
-    bool success = reader.ParseFromFile(objPath.data());
+    bool success = reader.ParseFromFile(objPath.string());
 
     // Check for errors/warnings
     if (!success) {

@@ -11,24 +11,29 @@ enum class ErrorCodes {
     GlfwError = 1,
 
     /**
+     * Failed to load GLEW.
+     */
+    GlewError = 2,
+
+    /**
      * Failed to parse a .obj file
      */
-    BadObjFile,
+    BadObjFile = 10,
 
     /**
      * Failed to load a texture file
      */
-    BadTexture,
+    BadTexture = 11,
 
     /**
      * Failed to compile a shader program
      */
-    BadShaderProgram,
+    BadShaderProgram = 12,
 
     /**
      * Failed to link a shader program
      */
-    FailedToLinkShaders,
+    FailedToLinkShaders = 13,
 };
 
 } // namespace PBR

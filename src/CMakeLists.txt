@@ -38,25 +38,29 @@ add_library(PBR
         skybox/SkyboxRenderer.cpp
         ${HEADER_LIST})
 
+target_compile_features(PBR PRIVATE cxx_std_17)
+
 target_include_directories(PBR
         PUBLIC
-            ../include
+                ../include
         PRIVATE
-            ${STB_INCLUDE_DIRS})
+                ${STB_INCLUDE_DIRS}
+                ${OPENGL_INCLUDE_DIR}
+                ${GLEW_INCLUDE_DIRS}
+                ${BOOST_FUNCTIONAL_INCLUDE_DIRS})
 
 set(PBR_PUBLIC_LINK_DEPENDENCIES
         glm)
 
 if (APPLE)
-    list(APPEND PUBLIC_LINK_DEPENDENCIES "-framework OpenGL")
+        list(APPEND PUBLIC_LINK_DEPENDENCIES "-framework OpenGL")
 endif()
 
 set(PBR_PRIVATE_LINK_DEPENDENCIES
         glfw
         GLEW::GLEW
+        ${GLEW_LIBRARIES}
         tinyobjloader::tinyobjloader)
-
-target_include_directories(PBR PRIVATE ${BOOST_FUNCTIONAL_INCLUDE_DIRS})
 
 target_link_libraries(PBR PUBLIC ${PBR_PUBLIC_LINK_DEPENDENCIES}
                           PRIVATE ${PBR_PRIVATE_LINK_DEPENDENCIES})

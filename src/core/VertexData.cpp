@@ -6,8 +6,8 @@
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
 
 #define POSITION_OFFSET 0
 #define NORMAL_OFFSET 3

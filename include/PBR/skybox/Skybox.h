@@ -1,7 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_SKYBOX
 #define PHYSICALLYBASEDRENDERER_SKYBOX
 
-#include <string_view>
+#include <filesystem>
 #include <vector>
 
 #include "core/Camera.h"
@@ -16,7 +16,7 @@ private:
     unsigned int vboId;
 
 public:
-    explicit Skybox(const std::vector<std::string_view>& faceTextures);
+    explicit Skybox(const std::vector<std::filesystem::path>& faceTextures);
     ~Skybox();
 
     /**

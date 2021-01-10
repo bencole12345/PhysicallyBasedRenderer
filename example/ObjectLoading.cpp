@@ -1,27 +1,35 @@
+#include <filesystem>
 #include <string>
 #include <PBR/PBR.h>
 
 using namespace PBR;
 using namespace PBR::phong;
 
+namespace fs = std::filesystem;
+
 void loadScene(std::shared_ptr<PhongScene>* scene)
 {
     // Load the viking room object
-    std::string_view objPath = "example/resources/models/viking_room.obj";
-    std::shared_ptr<Texture> texture(new Texture("example/resources/textures/viking_room.png"));
+    fs::path objPath = fs::current_path() / "example" / "resources" / "models" / "viking_room.obj";
+    fs::path texturePath = fs::current_path() / "example" / "resources" / "textures" / "viking_room.png";
+    std::shared_ptr<Texture> texture(new Texture(texturePath));
     glm::vec3 position(-2.0f, 0.0f, 0.0f);
     glm::vec3 orientation(0.0f);
     float scale = 10.0f;
-    PhongMaterial material{.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f};
+    float kD = 0.8f;
+    float kS = 0.2f;
+    float specularN = 1.0f;
+    PhongMaterial material{kD, kS, specularN};
     std::shared_ptr<PhongSceneObject> vikingRoom(
             new scene_objects::CustomObject(objPath, position, orientation, material, scale, texture));
 
     // Load the monkey
-    objPath = "example/resources/models/monkey.obj";
+    objPath = fs::current_path() / "example" / "resources" / "models" / "monkey.obj";
     position = glm::vec3(1.0f, 1.0f, 0.0f);
     orientation = glm::vec3(0.0f);
     scale = 0.8f;
-    material = {.kD = 0.8f, .kS = 0.2f, .specularN = 1.0f, .colour = glm::vec3(0.8f, 0.1f, 0.1f)};
+    glm::vec3 colour(0.8f, 0.1f, 0.1f);
+    material = {kD, kS, specularN, colour};
     std::shared_ptr<PhongSceneObject> monkey(
             new scene_objects::CustomObject(objPath, position, orientation, material, scale));
 

@@ -1,13 +1,12 @@
 #include "core/ShaderProgram.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <string_view>
 #include <vector>
 
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/gl3.h>
+#include <GL/glew.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -17,11 +16,13 @@
 #include "core/Texture.h"
 #include "skybox/Skybox.h"
 
+namespace fs = std::filesystem;
+
 namespace PBR {
 
 namespace {
 
-unsigned int loadAndCompileShader(std::string_view shaderLocation, GLenum shaderType)
+unsigned int loadAndCompileShader(const fs::path& shaderLocation, GLenum shaderType)
 {
     // Read the file
     std::ifstream stream(shaderLocation);
@@ -43,7 +44,7 @@ unsigned int loadAndCompileShader(std::string_view shaderLocation, GLenum shader
     int success;
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
     if (!success) {
-        int bufferSize = 512;
+        constexpr int bufferSize = 512;
         char infoLog[bufferSize];
         glGetShaderInfoLog(shaderId, bufferSize, nullptr, infoLog);
         std::cerr << "Shader error: " << infoLog << std::endl;
@@ -55,7 +56,7 @@ unsigned int loadAndCompileShader(std::string_view shaderLocation, GLenum shader
 
 } // anonymous namespace
 
-ShaderProgram::ShaderProgram(std::string_view vertexShaderLocation, std::string_view fragmentShaderLocation)
+ShaderProgram::ShaderProgram(const fs::path& vertexShaderLocation, const fs::path& fragmentShaderLocation)
         :shaderProgramId(glCreateProgram())
 {
     // Load the shaders
@@ -71,7 +72,7 @@ ShaderProgram::ShaderProgram(std::string_view vertexShaderLocation, std::string_
     int success;
     glGetProgramiv(shaderProgramId, GL_LINK_STATUS, &success);
     if (!success) {
-        int bufferSize = 512;
+        constexpr int bufferSize = 512;
         char infoLog[bufferSize];
         glGetProgramInfoLog(shaderProgramId, bufferSize, nullptr, infoLog);
         std::cerr << "Error linking shader programs: " << infoLog << std::endl;

@@ -2,6 +2,7 @@
 #define PHYSICALLYBASEDRENDERER_WINDOW
 
 #include <any>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -10,9 +11,8 @@
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
-
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <OpenGL/gl3.h>
 
 #include "core/ErrorCodes.h"
 #include "core/Renderer.h"
@@ -122,7 +122,7 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer<SceneType>> renderer, std:
         [](int error, const char *description) {
             std::cout << "GLFW Error: " << description << std::endl;
             glfwTerminate();
-            exit((int) ExitCodes::GlfwError);
+            exit((int) ErrorCodes::GlfwError);
         }
     );
 
