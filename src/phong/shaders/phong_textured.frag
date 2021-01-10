@@ -1,7 +1,5 @@
 #version 410 core
 
-// TODO: Find a way to embed this into the binary
-
 #define MAX_LIGHTS 16
 
 struct Material {

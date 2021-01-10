@@ -11,7 +11,9 @@ CTestTestfile.cmake
 _deps
 cmake-build-debug
 .idea
+.vs
 .vscode
 build
 **/.DS_store
 *.cbp
+CMakeSettings.json

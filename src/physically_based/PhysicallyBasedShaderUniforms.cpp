@@ -14,6 +14,9 @@ void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms,
     shaderProgram.setUniform("View", uniforms.viewMatrix);
     shaderProgram.setUniform("Projection", uniforms.projectionMatrix);
 
+    // The matrix for rotating normals
+    shaderProgram.setUniform("NormalsRotation", uniforms.normalsRotationMatrix);
+
     // The camera's position in world coordinates
     shaderProgram.setUniform("cameraPosition", uniforms.cameraPosition);
 

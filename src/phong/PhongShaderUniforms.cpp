@@ -14,6 +14,7 @@ void writeUniformsToShaderProgram(const PhongShaderUniforms& uniforms, ShaderPro
     shaderProgram.setUniform("Model", uniforms.modelMatrix);
     shaderProgram.setUniform("View", uniforms.viewMatrix);
     shaderProgram.setUniform("Projection", uniforms.projectionMatrix);
+    shaderProgram.setUniform("NormalsRotation", uniforms.normalsRotationMatrix);
     shaderProgram.setUniform("cameraPosition", uniforms.cameraPosition);
     shaderProgram.setUniform("material.kD", uniforms.material.kD);
     shaderProgram.setUniform("material.kS", uniforms.material.kS);

@@ -1,13 +1,12 @@
 #version 410
 
-// TODO: Find a way to embed this into the binary
-
 layout (location = 0) in vec3 VertexPos;
 layout (location = 1) in vec3 Normal_modelCoords;
 
 uniform mat4 Model;
 uniform mat4 View;
 uniform mat4 Projection;
+uniform mat4 NormalsRotation;
 
 out vec4 Normal;
 out vec4 Position_world;
@@ -19,7 +18,7 @@ void main()
    vec4 normal_coords = vec4(Normal_modelCoords, 1.0);
 
    // Compute the world position of this vertex
-   Position_world = inverse(transpose(Model)) * model_coords;
+   Position_world = NormalsRotation * model_coords;
 
    // Compute the projected onscreen position of this vertex
    gl_Position = Projection * View * Model * model_coords;

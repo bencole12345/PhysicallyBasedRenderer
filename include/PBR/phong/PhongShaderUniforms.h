@@ -23,6 +23,7 @@ struct PhongShaderUniforms {
     glm::mat4 modelMatrix;
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
+    glm::mat4 normalsRotationMatrix;
     glm::vec3 cameraPosition;
     PhongMaterial material;
     LightingInfo lightingInfo;

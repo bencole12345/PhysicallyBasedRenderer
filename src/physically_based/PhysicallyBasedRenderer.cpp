@@ -48,6 +48,7 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
                 object->getModelMatrix(),
                 camera.getViewMatrix(),
                 camera.getProjectionMatrix(),
+                object->getRotationMatrix(),
                 camera.position(),
                 object->material,
                 PhysicallyBasedDirectLightingInfo{scene->getLightPositions(), scene->getLightColours(), scene->getLightIntensities()},

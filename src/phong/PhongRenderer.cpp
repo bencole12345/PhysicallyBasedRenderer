@@ -66,6 +66,7 @@ void PhongRenderer::render(std::shared_ptr<PhongScene> scene, const Camera& came
                 object->getModelMatrix(),
                 camera.getViewMatrix(),
                 camera.getProjectionMatrix(),
+                object->getRotationMatrix(),
                 camera.position(),
                 object->material,
                 LightingInfo{scene->getAmbientLight(), scene->getLightPositions(), scene->getLightColours()},

@@ -55,6 +55,14 @@ struct SceneObject {
     glm::mat4 getModelMatrix() const;
 
     /**
+     * Computes the rotation matrix for this scene object.
+     * 
+     * This is equivalent to applying the model matrix, but without the scale
+     * and translation operations.
+     */
+    glm::mat4 getRotationMatrix() const;
+
+    /**
      * @return `true` if this scene object is textured, `false` if it is untextured
      */
     bool hasTexture() const;
@@ -90,6 +98,18 @@ glm::mat4 SceneObject<MaterialType>::getModelMatrix() const
 
     // The first step is to perform the rotations.
     auto rotatedZ = glm::rotate(scaled, orientation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+    auto rotatedYZ = glm::rotate(rotatedZ, orientation[1], glm::vec3(0.0f, 1.0f, 0.0f));
+    auto rotatedXYZ = glm::rotate(rotatedYZ, orientation[0], glm::vec3(1.0f, 0.0f, 0.0f));
+
+    return rotatedXYZ;
+}
+
+template<class MaterialType>
+glm::mat4 SceneObject<MaterialType>::getRotationMatrix() const
+{
+    glm::mat4 identity(1.0f);
+
+    auto rotatedZ = glm::rotate(identity, orientation[2], glm::vec3(0.0f, 0.0f, 1.0f));
     auto rotatedYZ = glm::rotate(rotatedZ, orientation[1], glm::vec3(0.0f, 1.0f, 0.0f));
     auto rotatedXYZ = glm::rotate(rotatedYZ, orientation[0], glm::vec3(1.0f, 0.0f, 0.0f));
 
