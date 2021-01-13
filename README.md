@@ -5,7 +5,9 @@ A physically-based renderer I'm working on, using C++ and OpenGL. The renderer h
 The project is still under development, so check back soon for updates!
 
 ## Screenshots [Physically Based Mode]
-![Physically Rendered Spheres](screenshots/physically_based_spheres.png "Spheres rendered using PBR materials")
+![Physically Rendered Spheres](screenshots/physically_shaded_spheres_ibl_fake_specular.png "Spheres rendered using PBR materials")
+
+[Screenshot taken while I'm still working on proper image based specular lighting: for now it's a bit of a hack!]
 
 From left-to-right the spheres become more metallic, and from bottom-to-top they become rougher.
 
@@ -23,8 +25,9 @@ All examples privately link against the core library. The library includes funct
 ## Build Dependencies (vcpkg)
 
 - `boost-functional`
+- `glew`
 - `glfw3`
 - `glm`
-- `opengl`
+- `opengl` (this might be preinstalled for you)
 - `stb`
 - `tinyobjloader`

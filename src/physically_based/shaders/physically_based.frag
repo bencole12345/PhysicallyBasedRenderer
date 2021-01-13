@@ -22,6 +22,16 @@ struct DirectLightingInfo {
     float intensities[MAX_LIGHTS];
 };
 
+/**
+ * Contains information about the scene's sun.
+ */
+struct SunInfo {
+    vec3 direction;
+    vec3 colour;
+    float intensity;
+};
+
+
 in vec4 Normal;
 in vec4 Position_world;
 in vec2 TexCoord;
@@ -29,13 +39,15 @@ in vec2 TexCoord;
 uniform vec3 cameraPosition;
 uniform Material material;
 uniform DirectLightingInfo lightingInfo;
-uniform samplerCube skybox;
+uniform SunInfo sunInfo;
+uniform sampler2D diffuseIrradianceMap;
+uniform sampler2D specularIrradianceMap;
 
-out vec4 FragColor;
+out vec4 FragColour;
 
 
-const float PI = 3.14159;
-const float EPSILON = 0.000001;
+#define PI 3.14159
+#define EPSILON 0.000001
 
 
 /**
@@ -82,7 +94,7 @@ float normalDistribution(vec3 n, vec3 h, float roughness)
     // Compute the formula
     float numerator = a * a;
     float denominatorInner = (n_dot_h * n_dot_h * (a * a - 1.0) + 1.0);
-    float denominatorFull = 3.14159 * denominatorInner * denominatorInner;
+    float denominatorFull = PI * denominatorInner * denominatorInner;
 
     // Make sure we don't accidentally divide by zero
     float denominator = max(denominatorFull, EPSILON);
@@ -109,8 +121,7 @@ float geometry(vec3 n, vec3 v, vec3 l, float roughness)
 {
     float a = alpha(roughness);
     float k = K(a, false);
-//    return G_SchlickGGX(n, v, k) * G_SchlickGGX(n, l, k);
-    return G_SchlickGGX(n, v, k);
+    return G_SchlickGGX(n, v, k) * G_SchlickGGX(n, l, k);
 }
 
 /**
@@ -121,6 +132,79 @@ vec3 fresnel(vec3 h, vec3 v, vec3 F0)
 {
     float cosTheta = max(dot(h, v), 0.0);
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
+}
+
+vec3 BRDF(vec3 p, vec3 wi, vec3 wo, vec3 n, vec3 F0)
+{
+    // Compute h (halfway) vector
+    vec3 h = normalize(wi + wo);
+
+    // Compute the three functions to determine the specular term
+    float D = normalDistribution(n, h, material.roughness);
+    float G = geometry(n, wo, wi, material.roughness);
+    vec3 F = fresnel(h, wo, F0);
+
+    // Use F and the material's metallic level to work out the diffuse coefficient
+    vec3 kS = F;
+    vec3 kD = (vec3(1.0) - kS) * (1 - material.metallic);
+
+    // Compute the coefficient to be applied to the radiance from this light
+    vec3 numerator = D * G * F;
+    float denominator = 4 * max(dot(n, wo), 0.0) * max(dot(n, wi), 0.0);
+    vec3 specular = numerator / max(denominator, 0.001);
+
+    return (kD * material.albedo / PI) + specular;
+}
+
+/**
+ * Computes the additive contribution from a particular light in the set of
+ * point lights.
+ */
+vec3 contributionFromLight(int lightIndex, vec3 n, vec3 p, vec3 v, vec3 F0)
+{
+    // Read data about this light
+    vec3 p_light = lightingInfo.lightPositions[lightIndex];
+    vec3 luminance = lightingInfo.intensities[lightIndex] * lightingInfo.lightColours[lightIndex];
+
+    // Work out how much energy we receive from this light source
+    float attenuationAmount = attenuation(p_light, p);
+    vec3 radiance = attenuationAmount * luminance;
+
+    // Vector to the light
+    vec3 l = normalize(p_light - p);
+
+    return BRDF(p, l, v, n, F0) * radiance * max(dot(n, l), 0.0);
+}
+
+/**
+ * Computes the contribution from the sun.
+ */
+vec3 contributionFromSun(vec3 n, vec3 p, vec3 v, vec3 F0)
+{
+    vec3 radiance = sunInfo.colour * sunInfo.intensity;
+    vec3 l = sunInfo.direction;
+    return BRDF(p, l, v, n, F0) * radiance * max(dot(n, l), 0.0);
+}
+
+/**
+ * Convert from cubemap coordinates to UV coordinates for the texture.
+ */
+vec2 cubemapCoordsToUVs(vec3 cubemapCoords)
+{
+    // Radius when projected into the XZ plane
+    float r = sqrt(cubemapCoords.x * cubemapCoords.x + cubemapCoords.z * cubemapCoords.z);
+
+    // Rotation clockwise from -Z axis
+    float phi = atan(cubemapCoords.x, -cubemapCoords.z);
+
+    // Rotation up from XZ plane
+    float theta = atan(cubemapCoords.y, r);
+
+    // Corresponding texture location
+    float u = 0.5 + phi / (2 * PI);
+    float v = 0.5 + theta / (2 * PI);
+
+    return vec2(u, v);
 }
 
 /**
@@ -152,49 +236,30 @@ void main()
     // albedo as F0.
     vec3 F0_corrected = mix(material.F0, material.albedo, material.metallic);
 
-    // Integrate by summing over all light sources
+    // Add the contributions of all point light sources
     vec3 Lo = vec3(0.0);
     for (int i = 0; i < MAX_LIGHTS; i++) {
-
-        // Work out how much energy we receive from this light source,
-        // factoring in its attenuation.
-        vec3 p_light = lightingInfo.lightPositions[i];
-        vec3 luminance = lightingInfo.intensities[i] * lightingInfo.lightColours[i];
-        float attenuationAmount = attenuation(p_light, p);
-        vec3 radiance = attenuationAmount * luminance;
-
-        // Compute l (to light) and h (halfway) vectors
-        vec3 l = normalize(p_light - p);
-        vec3 h = normalize(v + l);
-
-        // Compute the three functions to determine the specular term
-        float D = normalDistribution(n, h, material.roughness);
-        float G = geometry(n, v, l, material.roughness);
-        vec3 F = fresnel(h, v, F0_corrected);
-
-        // Use F and the material's metallic level to work out the diffuse coefficient
-        vec3 kS = F;
-        vec3 kD = (vec3(1.0) - kS) * (1 - material.metallic);
-
-        // Compute the coefficient to be applied to the radiance from this light
-        vec3 numerator = D * G * F;
-        float denominator = 4 * max(dot(n, v), 0.0) * max(dot(n, l), 0.0);
-        vec3 specular = numerator / max(denominator, 0.001);
-        vec3 coefficientThisLight = (kD * material.albedo / PI) + specular;
-
-        // Work out the (additive) contribution from this light
-        vec3 contributionFromThisLight = coefficientThisLight * radiance * max(dot(n, l), 0.0);
-
-        // Add it to the accumulator for the integral
-        Lo += contributionFromThisLight;
+        Lo += contributionFromLight(i, n, p, v, F0_corrected);
     }
 
-    // Add some ambient lighting
-    Lo += 0.03 * material.albedo;
+    // Add the contribution from the sun
+    Lo += contributionFromSun(n, p, v, F0_corrected);
+
+    // Add the contribution from the diffuse irradiance map
+    vec2 uv = cubemapCoordsToUVs(n);
+    vec4 sampledDiffuse = texture(diffuseIrradianceMap, uv);
+    Lo += sampledDiffuse.rgb * material.albedo;
+
+    // TODO: Do this properly!
+    // Get fake specular lighting by sampling the specular map
+    vec3 li = dot(v, n) * n - 2 * v;
+    uv = cubemapCoordsToUVs(li);
+    vec4 sampledSpecular = texture(specularIrradianceMap, uv);
+    Lo += fresnel(n, v, F0_corrected) * sampledSpecular.rgb;
 
     // Correct the output colour
     vec3 colour = toneMap(Lo);
     vec3 gammaEncoded = gammaEncode(colour);
 
-    FragColor = vec4(gammaEncoded, 1.0f);
+    FragColour = vec4(gammaEncoded, 1.0f);
 }

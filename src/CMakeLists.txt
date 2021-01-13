@@ -25,12 +25,15 @@ add_library(PBR
         phong/PhongScene.cpp
         phong/PhongSceneObject.cpp
         phong/PhongShaderUniforms.cpp
+        physically_based/EnvironmentMap.cpp
+        physically_based/EnvironmentMapRenderer.cpp
         physically_based/FresnelValues.cpp
         physically_based/PhysicallyBasedMaterial.cpp
         physically_based/PhysicallyBasedRenderer.cpp
         physically_based/PhysicallyBasedScene.cpp
         physically_based/PhysicallyBasedSceneObject.cpp
         physically_based/PhysicallyBasedShaderUniforms.cpp
+        physically_based/Util.cpp
         scene_objects/Cube.cpp
         scene_objects/CustomObject.cpp
         scene_objects/Plane.cpp

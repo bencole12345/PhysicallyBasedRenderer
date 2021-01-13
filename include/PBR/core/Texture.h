@@ -14,16 +14,20 @@ namespace PBR {
 class Texture {
 private:
     unsigned int textureId;
+    bool isHDR;
 
 public:
-    Texture(const std::filesystem::path& texturePath, GLenum wrappingMode = GL_REPEAT, GLenum filteringMode = GL_LINEAR);
+    explicit Texture(const std::filesystem::path& texturePath, bool isHDR = false, GLenum wrappingMode = GL_REPEAT,
+                     GLenum filteringMode = GL_LINEAR);
 
-    Texture(const Texture &) = delete;
-    Texture& operator=(const Texture &) = delete;
+    Texture(const Texture&) = delete;
+    Texture& operator=(const Texture&) = delete;
 
     ~Texture();
 
     unsigned int id() const;
+
+    bool containsHDRData() const;
 };
 
 } // namespace PBR

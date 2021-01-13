@@ -31,9 +31,21 @@ void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms,
     shaderProgram.setUniform("lightingInfo.lightColours", uniforms.lightingInfo.lightColours);
     shaderProgram.setUniform("lightingInfo.intensities", uniforms.lightingInfo.intensities);
 
-    // Skybox
-    if (uniforms.skybox) {
-        shaderProgram.setUniform("skybox", uniforms.skybox.value());
+    // Irradiance maps
+    shaderProgram.setUniform("diffuseIrradianceMap", uniforms.diffuseIrradianceMap);
+    shaderProgram.setUniform("specularIrradianceMap", uniforms.specularIrradianceMap);
+
+    // The sun, if present
+    if (uniforms.sun) {
+        shaderProgram.setUniform("sunInfo.direction", uniforms.sun->direction);
+        shaderProgram.setUniform("sunInfo.colour", uniforms.sun->colour);
+        shaderProgram.setUniform("sunInfo.intensity", uniforms.sun->intensity);
+    }
+    else {
+        // We have to send something anyway to avoid undefined behaviour
+        shaderProgram.setUniform("sunInfo.direction", glm::vec3(1.0f, 0.0f, 0.0f));
+        shaderProgram.setUniform("sunInfo.colour", glm::vec3(1.0f));
+        shaderProgram.setUniform("sunInfo.intensity", 0.0f);
     }
 }
 

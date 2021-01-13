@@ -6,8 +6,8 @@
 #include "core/Camera.h"
 #include "core/Renderer.h"
 #include "core/ShaderProgram.h"
+#include "physically_based/EnvironmentMapRenderer.h"
 #include "physically_based/PhysicallyBasedScene.h"
-#include "skybox/SkyboxRenderer.h"
 
 namespace PBR::physically_based {
 
@@ -18,8 +18,7 @@ namespace PBR::physically_based {
 class PhysicallyBasedRenderer : public Renderer<PhysicallyBasedScene> {
 private:
     ShaderProgram shaderProgram;
-
-    skybox::SkyboxRenderer skyboxRenderer;
+    EnvironmentMapRenderer environmentMapRenderer;
 
 public:
     PhysicallyBasedRenderer();

@@ -1,8 +1,9 @@
 #include "physically_based/PhysicallyBasedRenderer.h"
 
 #include <memory>
-#include <optional>
 #include <string_view>
+
+#include <GL/glew.h>
 
 #include "physically_based/PhysicallyBasedScene.h"
 #include "physically_based/PhysicallyBasedShaderUniforms.h"
@@ -17,8 +18,7 @@ constexpr std::string_view PHYSICALLY_BASED_FRAGMENT_SHADER = "src/physically_ba
 namespace PBR::physically_based {
 
 PhysicallyBasedRenderer::PhysicallyBasedRenderer()
-    : shaderProgram(PHYSICALLY_BASED_VERTEX_SHADER, PHYSICALLY_BASED_FRAGMENT_SHADER),
-      skyboxRenderer()
+        :shaderProgram(PHYSICALLY_BASED_VERTEX_SHADER, PHYSICALLY_BASED_FRAGMENT_SHADER), environmentMapRenderer()
 {
 }
 
@@ -41,8 +41,6 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
     // Render each object in the scene
     for (const auto& object : scene->getSceneObjectsList()) {
 
-        shaderProgram.resetUniforms();
-
         // Write the uniforms to the shader
         PhysicallyBasedShaderUniforms uniforms{
                 object->getModelMatrix(),
@@ -51,21 +49,25 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
                 object->getRotationMatrix(),
                 camera.position(),
                 object->material,
-                PhysicallyBasedDirectLightingInfo{scene->getLightPositions(), scene->getLightColours(), scene->getLightIntensities()},
-                scene->hasSkybox() ? std::optional(scene->getSkybox()) : std::nullopt
+                PhysicallyBasedDirectLightingInfo{scene->getLightPositions(), scene->getLightColours(),
+                                                  scene->getLightIntensities()},
+                scene->getEnvironmentMap()->getSun(),
+                scene->getEnvironmentMap()->getDiffuseIrradianceMapTexture(),
+                scene->getEnvironmentMap()->getSpecularIrradianceMapTexture(),
         };
         writeUniformsToShaderProgram(uniforms, shaderProgram);
 
         // Draw the object
         glBindVertexArray(object->vertexData->getVaoId());
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->vertexData->getEboId());
-        glDrawElements(GL_TRIANGLES, object->vertexData->verticesCount(), GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_TRIANGLES, object->vertexData->verticesCount(), GL_UNSIGNED_INT, (void*) 0);
+
+        // Reset the uniforms ready for the next usage
+        shaderProgram.resetUniforms();
     }
 
-    // Render the skybox, if the scene has one
-    if (scene->hasSkybox()) {
-        skyboxRenderer.renderSkybox(scene->getSkybox(), camera);
-    }
+    // Render the environment map as a skybox
+    environmentMapRenderer.renderSkybox(scene->getEnvironmentMap(), camera);
 }
 
 } // namespace PBR::physically_based

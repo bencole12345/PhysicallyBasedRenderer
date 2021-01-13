@@ -96,6 +96,13 @@ unsigned int ShaderProgram::id() const
 
 void ShaderProgram::resetUniforms()
 {
+    // Unbind all textures
+    for (unsigned int i = 0; i < texturesCount; i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    // Reset the number of textures bound
     texturesCount = 0;
 }
 

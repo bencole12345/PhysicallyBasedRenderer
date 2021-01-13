@@ -8,10 +8,11 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-#include "physically_based/PhysicallyBasedMaterial.h"
+#include "core/DirectedLightSource.h"
 #include "core/ShaderProgram.h"
-#include "skybox/Skybox.h"
 #include "core/Texture.h"
+#include "physically_based/PhysicallyBasedMaterial.h"
+#include "skybox/Skybox.h"
 
 namespace PBR::physically_based {
 
@@ -22,14 +23,24 @@ struct PhysicallyBasedDirectLightingInfo {
 };
 
 struct PhysicallyBasedShaderUniforms {
+
+    // Geometry stuff
     glm::mat4 modelMatrix;
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
     glm::mat4 normalsRotationMatrix;
     glm::vec3 cameraPosition;
+
+    // Material description
     PhysicallyBasedMaterial material;
+
+    // Lighting information
     PhysicallyBasedDirectLightingInfo lightingInfo;
-    std::optional<std::shared_ptr<skybox::Skybox>> skybox {std::nullopt};
+    std::optional<DirectedLightSource> sun;
+
+    // Lighting maps
+    std::shared_ptr<Texture> diffuseIrradianceMap;
+    std::shared_ptr<Texture> specularIrradianceMap;
 };
 
 void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms, ShaderProgram& shaderProgram);
