@@ -31,11 +31,33 @@ vec2 cubemapCoordsToUVs(vec3 cubemapCoords)
     return vec2(u, v);
 }
 
+/**
+ * Apply tone mapping to a HDR colour to make it representible in regular
+ * colours.
+ */
+vec3 toneMap(vec3 colourHDR)
+{
+    return colourHDR / (vec3(1.0) + colourHDR);
+}
+
+/**
+ * Gamma encode a colour in linear colour space.
+ */
+vec3 gammaEncode(vec3 colour)
+{
+    return pow(colour, vec3(1.0 / 2.2));
+}
+
 void main()
 {
     // Perform the coordinate transform
     vec2 uv = cubemapCoordsToUVs(TexCoords);
 
     // Sample the texture
-    FragColour = texture(SkyboxTexture, uv);
+    vec3 sampled = texture(SkyboxTexture, uv).rgb;
+
+    // Correct colours and output
+    vec3 toneMapped = toneMap(sampled);
+    vec3 gammaEncoded = gammaEncode(toneMapped);
+    FragColour = vec4(gammaEncoded, 1.0);
 }

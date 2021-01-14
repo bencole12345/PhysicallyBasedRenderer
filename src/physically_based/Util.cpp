@@ -1,7 +1,11 @@
 #include "physically_based/Util.h"
 
+#include <filesystem>
+
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/trigonometric.hpp>
+
+namespace fs = std::filesystem;
 
 namespace PBR::physically_based {
 
@@ -18,6 +22,12 @@ glm::vec3 Util::uvToCartesian(glm::vec2 uv)
     auto z = -glm::sin(theta) * glm::cos(phi);
 
     return glm::vec3(x, y, z);
+}
+
+const std::filesystem::path& Util::getPhysicallyBasedShadersDirectory()
+{
+    static auto path = fs::current_path() / "src" / "physically_based" / "shaders";
+    return path;
 }
 
 } // namespace PBR::physically_based

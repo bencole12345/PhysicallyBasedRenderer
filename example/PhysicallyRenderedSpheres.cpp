@@ -34,22 +34,27 @@ void loadScene(std::shared_ptr<PhysicallyBasedScene>* scene)
         }
     }
 
-    // Point lights
-    std::vector<PointLightSource> lights{
-//            PointLightSource{glm::vec3(-2.0f, 1.0f, 4.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25.0f},
-//            PointLightSource{glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(1.0f), 4.0f},
-//            PointLightSource{glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(1.0f), 4.0f},
-//            PointLightSource{glm::vec3(4.0f, 5.0f, 4.0f), glm::vec3(1.0f), 16.0f}
-    };
+    // No additional point lights
+    std::vector<PointLightSource> lights{};
 
-    auto environmentMapDir = fs::current_path() / "example" / "resources" / "environment_maps" / "Arches_E_PineTree";
-    auto skyboxTexturePath = environmentMapDir / "Arches_E_PineTree_8k.jpg";
-    auto diffuseIrradianceMapPath = environmentMapDir / "Arches_E_PineTree_Env.hdr";
-    auto specularIrradianceMapPath = environmentMapDir / "Arches_E_PineTree_3k.hdr";
-    auto sunDirection = Util::uvToCartesian(glm::vec2(0.583750f, 0.365000f));
-    DirectedLightSource sun{sunDirection, glm::vec3(254.0f/255.0f, 241.0f/255.0f, 224.0f/255.0f), 1.2f};
-    std::shared_ptr<EnvironmentMap> environmentMap(
-            new EnvironmentMap(skyboxTexturePath, diffuseIrradianceMapPath, specularIrradianceMapPath, sun));
+    // Texture for the environment map
+    auto environmentMapsDir = fs::current_path() / "example" / "resources" / "environment_maps";
+
+    // Map 1: Utah desert
+//    auto texturePath = environmentMapsDir / "Arches_E_PineTree" / "Arches_E_PineTree_3k.hdr";
+//    auto sunDirection = Util::uvToCartesian(glm::vec2(0.583750f, 0.365000f));
+//    DirectedLightSource sun{sunDirection, glm::vec3(254.0f/255.0f, 241.0f/255.0f, 224.0f/255.0f), 1.2f};
+//    std::shared_ptr<EnvironmentMap> environmentMap(new EnvironmentMap(texturePath, sun));
+
+    // Map 2: Malibu coast
+//    auto texturePath = environmentMapsDir / "Malibu_Overlook" / "Malibu_Overlook_3k.hdr";
+//    auto sunDirection = Util::uvToCartesian(glm::vec2(0.424f, 0.2f));
+//    DirectedLightSource sun{sunDirection, glm::vec3(1.0f, 251.0f/255.0f, 232.0f/255.0f), 1.0f};
+//    std::shared_ptr<EnvironmentMap> environmentMap(new EnvironmentMap(texturePath, sun));
+
+    // Map 3: Winter forest
+    auto texturePath = environmentMapsDir / "Winter_Forest" / "WinterForest_Ref.hdr";
+    std::shared_ptr<EnvironmentMap> environmentMap(new EnvironmentMap(texturePath));
 
     // Create the scene
     *scene = std::make_shared<PhysicallyBasedScene>(sceneObjects, lights, environmentMap);

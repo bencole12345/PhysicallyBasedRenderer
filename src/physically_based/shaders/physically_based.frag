@@ -255,7 +255,8 @@ void main()
     vec3 li = dot(v, n) * n - 2 * v;
     uv = cubemapCoordsToUVs(li);
     vec4 sampledSpecular = texture(specularIrradianceMap, uv);
-    Lo += fresnel(n, v, F0_corrected) * sampledSpecular.rgb;
+    // Uncomment/comment this to enable/disable fake specular lighting
+//    Lo += fresnel(n, v, F0_corrected) * sampledSpecular.rgb;
 
     // Correct the output colour
     vec3 colour = toneMap(Lo);

@@ -1,24 +1,36 @@
 #include "physically_based/PhysicallyBasedRenderer.h"
 
+#include <filesystem>
 #include <memory>
-#include <string_view>
 
 #include <GL/glew.h>
 
 #include "physically_based/PhysicallyBasedScene.h"
 #include "physically_based/PhysicallyBasedShaderUniforms.h"
+#include "physically_based/Util.h"
 
-namespace {
-
-constexpr std::string_view PHYSICALLY_BASED_VERTEX_SHADER = "src/physically_based/shaders/physically_based.vert";
-constexpr std::string_view PHYSICALLY_BASED_FRAGMENT_SHADER = "src/physically_based/shaders/physically_based.frag";
-
-} // anonymous namespace
+namespace fs = std::filesystem;
 
 namespace PBR::physically_based {
 
+namespace {
+
+const fs::path& vertexShaderPath()
+{
+    static fs::path path = Util::getPhysicallyBasedShadersDirectory() / "physically_based.vert";
+    return path;
+}
+
+const fs::path& fragmentShaderPath()
+{
+    static fs::path path = Util::getPhysicallyBasedShadersDirectory() / "physically_based.frag";
+    return path;
+}
+
+} // anonymous namespace
+
 PhysicallyBasedRenderer::PhysicallyBasedRenderer()
-        :shaderProgram(PHYSICALLY_BASED_VERTEX_SHADER, PHYSICALLY_BASED_FRAGMENT_SHADER), environmentMapRenderer()
+        :shaderProgram(vertexShaderPath(), fragmentShaderPath()), environmentMapRenderer()
 {
 }
 

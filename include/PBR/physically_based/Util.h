@@ -1,6 +1,8 @@
 #ifndef PHYSICALLYBASEDRENDERER_UTIL
 #define PHYSICALLYBASEDRENDERER_UTIL
 
+#include <filesystem>
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
@@ -23,6 +25,11 @@ public:
      *         in the same direction
      */
     static glm::vec3 uvToCartesian(glm::vec2 uv);
+
+    /**
+     * @return The path where the physically based shaders are located
+     */
+    static const std::filesystem::path& getPhysicallyBasedShadersDirectory();
 };
 
 } // namespace PBR::physically_based

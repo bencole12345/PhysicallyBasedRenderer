@@ -19,7 +19,7 @@ private:
     /**
      * The underlying HDR texture.
      */
-    std::shared_ptr<Texture> skyboxTexture;
+    std::shared_ptr<Texture> backgroundTexture;
 
     /**
      * The irradiance map for diffuse lighting.
@@ -37,12 +37,10 @@ private:
     std::optional<DirectedLightSource> sun;
 
 public:
-    explicit EnvironmentMap(const std::filesystem::path& skyboxTexturePath,
-                            const std::filesystem::path& diffuseIrradianceMapTexturePath,
-                            const std::filesystem::path& specularIrradianceMapTexturePath,
+    explicit EnvironmentMap(const std::filesystem::path& texturePath,
                             std::optional<DirectedLightSource> sun = std::nullopt);
 
-    std::shared_ptr<Texture> getSkyboxTexture() const;
+    std::shared_ptr<Texture> getBackgroundTexture() const;
 
     std::shared_ptr<Texture> getDiffuseIrradianceMapTexture() const;
 

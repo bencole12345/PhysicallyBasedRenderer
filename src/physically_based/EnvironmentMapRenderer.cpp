@@ -10,20 +10,23 @@
 #include "core/Camera.h"
 #include "core/ShaderProgram.h"
 #include "physically_based/EnvironmentMap.h"
+#include "physically_based/Util.h"
 
 namespace fs = std::filesystem;
+
+namespace PBR::physically_based {
 
 namespace {
 
 const fs::path& getSkyboxVertexShaderPath()
 {
-    static fs::path path = fs::current_path() / "src" / "physically_based" / "shaders" / "envmap_skybox.vert";
+    static fs::path path = Util::getPhysicallyBasedShadersDirectory() / "envmap_skybox.vert";
     return path;
 }
 
 const fs::path& getSkyboxFragmentShaderPath()
 {
-    static fs::path path = fs::current_path() / "src" / "physically_based" / "shaders" / "envmap_skybox.frag";
+    static fs::path path = Util::getPhysicallyBasedShadersDirectory() / "envmap_skybox.frag";
     return path;
 }
 
@@ -81,8 +84,6 @@ constexpr float skyboxCubeVertices[] = {
 
 } // anonymous namespace
 
-namespace PBR::physically_based {
-
 EnvironmentMapRenderer::EnvironmentMapRenderer()
     :skyboxRenderingShader(getSkyboxVertexShaderPath(), getSkyboxFragmentShaderPath()), vaoId(), vboId()
 {
@@ -127,7 +128,7 @@ void EnvironmentMapRenderer::renderSkybox(const std::shared_ptr<EnvironmentMap>&
     skyboxRenderingShader.resetUniforms();
     skyboxRenderingShader.setUniform("View", viewMatrixCorrected);
     skyboxRenderingShader.setUniform("Projection", projectionMatrix);
-    skyboxRenderingShader.setUniform("SkyboxTexture", environmentMap->getSkyboxTexture());
+    skyboxRenderingShader.setUniform("SkyboxTexture", environmentMap->getBackgroundTexture());
 
     // We need to change the depth culling mode for this render. We need to use
     // less-than-or-equal so that unrendered values beyond the far clipping plane
