@@ -7,10 +7,10 @@ using namespace PBR::phong;
 
 namespace fs = std::filesystem;
 
-void loadScene(std::shared_ptr<PhongScene>* scene)
+std::shared_ptr<PhongScene> loadScene()
 {
     // Load the viking room object
-    fs::path objPath = fs::current_path() / "example" / "resources" / "models" / "viking_room.obj";
+    fs::path objPath = fs::current_path() / "example" / "resources" / "models" / "VikingRoom.obj";
     fs::path texturePath = fs::current_path() / "example" / "resources" / "textures" / "viking_room.png";
     std::shared_ptr<Texture> texture(new Texture(texturePath));
     glm::vec3 position(-2.0f, 0.0f, 0.0f);
@@ -24,7 +24,7 @@ void loadScene(std::shared_ptr<PhongScene>* scene)
             new scene_objects::CustomObject(objPath, position, orientation, material, scale, texture));
 
     // Load the monkey
-    objPath = fs::current_path() / "example" / "resources" / "models" / "monkey.obj";
+    objPath = fs::current_path() / "example" / "resources" / "models" / "SuzanneFlat.obj";
     position = glm::vec3(1.0f, 1.0f, 0.0f);
     orientation = glm::vec3(0.0f);
     scale = 0.8f;
@@ -50,7 +50,7 @@ void loadScene(std::shared_ptr<PhongScene>* scene)
     };
 
     // Create the scene
-    *scene = std::make_shared<PhongScene>(sceneObjects, ambientLight, lights, backgroundColour);
+    return std::make_shared<PhongScene>(sceneObjects, ambientLight, lights, backgroundColour);
 }
 
 int main()
@@ -63,8 +63,7 @@ int main()
     Window window(title, width, height);
 
     // Create a scene
-    std::shared_ptr<PhongScene> scene;
-    loadScene(&scene);
+    std::shared_ptr<PhongScene> scene = loadScene();
 
     // Create a Phong renderer
     std::shared_ptr<Renderer<PhongScene>> renderer(new PhongRenderer());

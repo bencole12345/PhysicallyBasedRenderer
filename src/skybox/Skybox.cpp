@@ -127,6 +127,8 @@ Skybox::Skybox(const std::vector<fs::path>& faceTextures)
 Skybox::~Skybox()
 {
     glDeleteTextures(1, &textureId);
+    glDeleteBuffers(1, &vboId);
+    glDeleteVertexArrays(1, &vaoId);
 }
 
 } // namespace PBR::skybox

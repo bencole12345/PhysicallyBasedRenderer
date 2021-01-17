@@ -1,7 +1,5 @@
 #version 410
 
-// TODO: Find a way to embed this in the binary
-
 layout (location = 0) in vec3 VertexPos;
 
 uniform mat4 Projection;

@@ -1,8 +1,8 @@
-add_executable(CubesWithSkybox CubesWithSkybox.cpp)
+add_executable(CubesWithSkybox programs/CubesWithSkybox.cpp)
 target_link_libraries(CubesWithSkybox PRIVATE PBR)
 
-add_executable(ObjectLoading ObjectLoading.cpp)
+add_executable(ObjectLoading programs/ObjectLoading.cpp)
 target_link_libraries(ObjectLoading PRIVATE PBR)
 
-add_executable(PhysicallyRenderedSpheres PhysicallyRenderedSpheres.cpp)
+add_executable(PhysicallyRenderedSpheres programs/PhysicallyRenderedSpheres.cpp)
 target_link_libraries(PhysicallyRenderedSpheres PRIVATE PBR)

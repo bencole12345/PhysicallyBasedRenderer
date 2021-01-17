@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 std::shared_ptr<PhysicallyBasedScene> loadScene()
 {
     // Generate 16 spheres
-    fs::path objPath = std::filesystem::current_path() / "example" / "resources" / "models" / "sphere-highpoly.obj";
+    fs::path objPath = std::filesystem::current_path() / "example" / "resources" / "models" / "SphereHighPoly.obj";
 
     std::vector<std::shared_ptr<PhysicallyBasedSceneObject>> sceneObjects;
     for (int i = 0; i < 4; i++) {

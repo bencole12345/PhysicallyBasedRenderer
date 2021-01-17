@@ -1,6 +1,5 @@
 # Blender v2.91.0 OBJ File: 'HighPolyCube.blend'
 # www.blender.org
-mtllib sphere-highpoly.mtl
 o Sphere_Sphere.002
 v 0.000000 0.989177 -0.146730
 v 0.000000 0.980785 -0.195090
@@ -24517,7 +24516,6 @@ vn -0.0453 0.3825 -0.9228
 vn -0.0292 -0.8030 -0.5952
 vn -0.0462 0.3367 -0.9404
 vn -0.0273 -0.8313 -0.5552
-usemtl None
 s 1
 f 9/1/1 8048/2/2 53/3/3 54/4/4
 f 23/5/5 8061/6/6 80/7/7 81/8/8

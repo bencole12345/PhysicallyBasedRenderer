@@ -7,7 +7,7 @@ using namespace PBR::phong;
 
 namespace fs = std::filesystem;
 
-void loadScene(std::shared_ptr<PhongScene>* scene)
+std::shared_ptr<PhongScene> loadScene()
 {
     // Create the untextured orange cube
     float kD = 0.6f, kS = 0.4f, specularN = 2.0f;
@@ -83,10 +83,10 @@ void loadScene(std::shared_ptr<PhongScene>* scene)
     std::shared_ptr<skybox::Skybox> skybox(new skybox::Skybox(skyboxTextures));
 
     // Create the scene
-    *scene = std::make_shared<PhongScene>(sceneObjects,
-                                          ambientLight,
-                                          lights,
-                                          skybox);
+    return std::make_shared<PhongScene>(sceneObjects,
+                                        ambientLight,
+                                        lights,
+                                        skybox);
 }
 
 int main()
@@ -99,8 +99,7 @@ int main()
     Window window(title, width, height);
 
     // Create a scene
-    std::shared_ptr<PhongScene> scene;
-    loadScene(&scene);
+    std::shared_ptr<PhongScene> scene = loadScene();
 
     // Create a Phong renderer
     std::shared_ptr<PhongRenderer> renderer(new PhongRenderer());
