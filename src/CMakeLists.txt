@@ -20,6 +20,7 @@ add_library(PBR
         core/Texture.cpp
         core/VertexData.cpp
         core/Window.cpp
+        debug/DebuggingUtil.cpp
         phong/PhongMaterial.cpp
         phong/PhongRenderer.cpp
         phong/PhongScene.cpp
