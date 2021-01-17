@@ -1,7 +1,7 @@
 #version 410
 
-// Disclaimer: I copied how https://learnopengl.com/Advanced-OpenGL/Framebuffers works for
-// this file.
+// DISCLAIMER: This file is just a modified version of how they did it
+// here: https://learnopengl.com/Advanced-OpenGL/Framebuffers
 
 layout (location = 0) in vec2 PositionNDC;
 layout (location = 1) in vec2 TexCoords_in;

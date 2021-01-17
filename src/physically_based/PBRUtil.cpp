@@ -1,4 +1,4 @@
-#include "physically_based/Util.h"
+#include "physically_based/PBRUtil.h"
 
 #include <filesystem>
 
@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 namespace PBR::physically_based {
 
-glm::vec3 Util::uvToCartesian(glm::vec2 uv)
+glm::vec3 PBRUtil::uvToCartesian(glm::vec2 uv)
 {
     float u = uv.x;
     float v = uv.y;
@@ -24,7 +24,7 @@ glm::vec3 Util::uvToCartesian(glm::vec2 uv)
     return glm::vec3(x, y, z);
 }
 
-const std::filesystem::path& Util::getPhysicallyBasedShadersDirectory()
+const std::filesystem::path& PBRUtil::pbrShadersDir()
 {
     static auto path = fs::current_path() / "src" / "physically_based" / "shaders";
     return path;

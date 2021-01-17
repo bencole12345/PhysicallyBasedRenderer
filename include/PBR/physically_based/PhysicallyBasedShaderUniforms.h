@@ -12,7 +12,6 @@
 #include "core/ShaderProgram.h"
 #include "core/Texture.h"
 #include "physically_based/PhysicallyBasedMaterial.h"
-#include "skybox/Skybox.h"
 
 namespace PBR::physically_based {
 
@@ -39,8 +38,9 @@ struct PhysicallyBasedShaderUniforms {
     std::optional<DirectedLightSource> sun;
 
     // Lighting maps
-    std::shared_ptr<Texture> diffuseIrradianceMap;
-    std::shared_ptr<Texture> specularIrradianceMap;
+    std::shared_ptr<Texture> irradianceMap;
+    std::shared_ptr<Texture> preFilteredEnvironmentMap;
+    std::shared_ptr<Texture> brdfIntegrationMap;
 };
 
 void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms, ShaderProgram& shaderProgram);

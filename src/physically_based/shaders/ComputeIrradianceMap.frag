@@ -2,7 +2,7 @@
 
 in vec2 TexCoords;
 
-uniform sampler2D backgroundTexture;
+uniform sampler2D radianceMap;
 
 out vec4 FragColour;
 
@@ -10,7 +10,7 @@ out vec4 FragColour;
 #define PI 3.14159
 
 // Number of alpha values to choose
-#define N 30
+#define N_ALPHA 30
 
 
 /**
@@ -47,7 +47,7 @@ vec2 sphericalToUV(vec2 phiTheta)
 vec4 sampleTextureSpherical(vec2 spherical)
 {
     vec2 uv = sphericalToUV(spherical);
-    return texture(backgroundTexture, uv);
+    return texture(radianceMap, uv);
 }
 
 void main()
@@ -82,16 +82,16 @@ void main()
     // Compute the basis vectors e_phi, e_theta, e_r in Cartesian coordinates.
     // Derivation: write the expression for mapping from spherical polar to Cartesian
     // coordinates then differentiate wrt phi, theta and r respectively
-    vec3 e_phi = vec3(cos(phi)*cos(theta), 0, sin(phi)*cos(theta));
+    vec3 e_phi = normalize(vec3(cos(phi)*cos(theta), 0, sin(phi)*cos(theta)));
     vec3 e_theta = vec3(-sin(phi)*sin(theta), cos(theta), cos(phi)*sin(theta));
     vec3 e_r = vec3(sin(phi)*cos(theta), sin(theta), -cos(phi)*cos(theta));
 
     // Compute the integral
     vec4 result = vec4(0.0);
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N_ALPHA; i++) {
 
         // Alpha is the angle between the normal and the point we're currently sampling
-        float alpha = float(i)/(N-1) * PI / 2.0;
+        float alpha = float(i)/(N_ALPHA-1) * PI / 2.0;
 
         int J = 4*i + 1;
         for (int j = 0; j < J; j++) {
@@ -124,6 +124,6 @@ void main()
     }
 
     // Compensate for the number of samples collected
-    int numSamples = N * (2*N - 1);  // arithmetic series :) (1 + 5 + 9 + ...)
+    int numSamples = N_ALPHA * (2*N_ALPHA - 1);  // arithmetic series :) (1 + 5 + 9 + ...)
     FragColour = PI * result * (1.0 / numSamples);
 }

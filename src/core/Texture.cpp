@@ -21,7 +21,7 @@ Texture::Texture()
     glGenTextures(1, &textureId);
 }
 
-Texture::Texture(const fs::path& texturePath, bool isHDR, GLenum wrappingMode, GLenum filteringMode)
+Texture::Texture(const fs::path& texturePath, bool isHDR, bool createMipmap)
         :Texture()
 {
     // Load the image
@@ -46,19 +46,16 @@ Texture::Texture(const fs::path& texturePath, bool isHDR, GLenum wrappingMode, G
         exit((int) ErrorCodes::BadTexture);
     }
 
-    // Generate mipmap
-    glGenerateMipmap(textureId);
-
     // Bind the texture
     glBindTexture(GL_TEXTURE_2D, textureId);
 
     // Set the wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrappingMode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrappingMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // Set the filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filteringMode);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filteringMode);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     // Write the texture data to the GPU and delete the copy stored here afterwards
     if (isHDR) {
@@ -70,6 +67,14 @@ Texture::Texture(const fs::path& texturePath, bool isHDR, GLenum wrappingMode, G
                      std::get<unsigned char*>(data));
         stbi_image_free(std::get<unsigned char*>(data));
     }
+
+    // Generate mipmap
+    if (createMipmap) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    // Unbind the texture
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture()

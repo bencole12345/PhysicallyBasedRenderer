@@ -19,17 +19,21 @@ private:
     /**
      * The underlying HDR texture.
      */
-    std::shared_ptr<Texture> backgroundTexture;
+    std::shared_ptr<Texture> radianceMap;
 
     /**
      * The irradiance map for diffuse lighting.
+     *
+     * This is the integral of Li(p, wi) * (n dot wi) precomputed for each hemisphere.
      */
-    std::shared_ptr<Texture> diffuseIrradianceMap;
+    std::shared_ptr<Texture> irradianceMap;
 
     /**
      * The irradiance map for specular lighting.
+     *
+     * This is the integral of Li(p, wi) precomputed for each hemisphere.
      */
-    std::shared_ptr<Texture> specularIrradianceMap;
+    std::shared_ptr<Texture> preFilteredEnvironmentMap;
 
     /**
      * The sun's light source, if it exists.
@@ -40,11 +44,11 @@ public:
     explicit EnvironmentMap(const std::filesystem::path& texturePath,
                             std::optional<DirectedLightSource> sun = std::nullopt);
 
-    std::shared_ptr<Texture> getBackgroundTexture() const;
+    std::shared_ptr<Texture> getRadianceMap() const;
 
-    std::shared_ptr<Texture> getDiffuseIrradianceMapTexture() const;
+    std::shared_ptr<Texture> getIrradianceMap() const;
 
-    std::shared_ptr<Texture> getSpecularIrradianceMapTexture() const;
+    std::shared_ptr<Texture> getPreFilteredEnvironmentMap() const;
 
     const std::optional<DirectedLightSource>& getSun() const;
 };

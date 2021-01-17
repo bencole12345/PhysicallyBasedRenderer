@@ -18,6 +18,7 @@ add_library(PBR
         core/SceneObject.cpp
         core/ShaderProgram.cpp
         core/Texture.cpp
+        core/TexturePrecomputation.cpp
         core/VertexData.cpp
         core/Window.cpp
         debug/DebuggingUtil.cpp
@@ -29,12 +30,12 @@ add_library(PBR
         physically_based/EnvironmentMap.cpp
         physically_based/EnvironmentMapRenderer.cpp
         physically_based/FresnelValues.cpp
+        physically_based/PBRUtil.cpp
         physically_based/PhysicallyBasedMaterial.cpp
         physically_based/PhysicallyBasedRenderer.cpp
         physically_based/PhysicallyBasedScene.cpp
         physically_based/PhysicallyBasedSceneObject.cpp
         physically_based/PhysicallyBasedShaderUniforms.cpp
-        physically_based/Util.cpp
         scene_objects/Cube.cpp
         scene_objects/CustomObject.cpp
         scene_objects/Plane.cpp

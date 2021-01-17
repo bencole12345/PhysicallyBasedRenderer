@@ -1,5 +1,5 @@
-#ifndef PHYSICALLYBASEDRENDERER_UTIL
-#define PHYSICALLYBASEDRENDERER_UTIL
+#ifndef PHYSICALLYBASEDRENDERER_PBRUTIL
+#define PHYSICALLYBASEDRENDERER_PBRUTIL
 
 #include <filesystem>
 
@@ -11,7 +11,7 @@ namespace PBR::physically_based {
 /**
  * Miscellaneous helper functions used in the physically_based namespace.
  */
-struct Util {
+struct PBRUtil {
 public:
     /**
      * Convert from UV (polar) coordinates in a spherically projected texture into
@@ -29,9 +29,9 @@ public:
     /**
      * @return The path where the physically based shaders are located
      */
-    static const std::filesystem::path& getPhysicallyBasedShadersDirectory();
+    static const std::filesystem::path& pbrShadersDir();
 };
 
 } // namespace PBR::physically_based
 
-#endif //PHYSICALLYBASEDRENDERER_UTIL
+#endif //PHYSICALLYBASEDRENDERER_PBRUTIL

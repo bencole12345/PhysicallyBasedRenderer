@@ -10,13 +10,16 @@
 
 namespace PBR {
 
+/**
+ * Wraps an OpenGL texture object.
+ */
 class Texture {
 private:
     unsigned int textureId;
 
 public:
     /**
-     * Create a texture without initialising it.
+     * Create a texture object without initialising it.
      */
     Texture();
 
@@ -32,8 +35,7 @@ public:
      * @param wrappingMode The wrapping mode to use
      * @param filteringMode The filtering mode to use
      */
-    explicit Texture(const std::filesystem::path& texturePath, bool isHDR = false, GLenum wrappingMode = GL_REPEAT,
-                     GLenum filteringMode = GL_LINEAR);
+    explicit Texture(const std::filesystem::path& texturePath, bool isHDR = false, bool createMipmap = true);
 
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;

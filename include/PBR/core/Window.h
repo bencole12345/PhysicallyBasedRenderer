@@ -111,7 +111,6 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer<SceneType>> renderer, std:
     // Callback for frame buffer resize events
     GLFWCallbackWrapper::bindFrameBufferResizeCallback(
         [&driver](GLFWwindow*, int width, int height) {
-            glViewport(0, 0, width, height);
             float ratio = (float) width / (float) height;
             driver.setAspectRatio(ratio);
         }
@@ -140,6 +139,11 @@ void Window::loopUntilClosed(std::shared_ptr<Renderer<SceneType>> renderer, std:
 
         // Update the renderer driver's state
         driver.update(dt);
+
+        // Make sure the viewport is the right size
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
 
         // Render the scene
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -46,6 +46,7 @@ public:
      */
     void resetUniforms();
 
+    void setUniform(const std::string& name, bool value);
     void setUniform(const std::string& name, float value);
     void setUniform(const std::string& name, double value);
     void setUniform(const std::string& name, int value);

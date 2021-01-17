@@ -31,9 +31,10 @@ void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms,
     shaderProgram.setUniform("lightingInfo.lightColours", uniforms.lightingInfo.lightColours);
     shaderProgram.setUniform("lightingInfo.intensities", uniforms.lightingInfo.intensities);
 
-    // Irradiance maps
-    shaderProgram.setUniform("diffuseIrradianceMap", uniforms.diffuseIrradianceMap);
-    shaderProgram.setUniform("specularIrradianceMap", uniforms.specularIrradianceMap);
+    // Lighting maps
+    shaderProgram.setUniform("irradianceMap", uniforms.irradianceMap);
+    shaderProgram.setUniform("preFilteredEnvironmentMap", uniforms.preFilteredEnvironmentMap);
+    shaderProgram.setUniform("brdfIntegrationMap", uniforms.brdfIntegrationMap);
 
     // The sun, if present
     if (uniforms.sun) {

@@ -106,6 +106,12 @@ void ShaderProgram::resetUniforms()
     texturesCount = 0;
 }
 
+void ShaderProgram::setUniform(const std::string& name, bool value)
+{
+    int position = glGetUniformLocation(shaderProgramId, name.c_str());
+    glUniform1i(position, value);
+}
+
 void ShaderProgram::setUniform(const std::string& name, float value)
 {
     int position = glGetUniformLocation(shaderProgramId, name.c_str());

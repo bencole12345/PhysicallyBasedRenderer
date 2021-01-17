@@ -4,147 +4,97 @@
 #include <memory>
 #include <optional>
 
-#include <GL/glew.h>
-
 #include "core/DirectedLightSource.h"
 #include "core/ShaderProgram.h"
 #include "core/Texture.h"
-#include "physically_based/Util.h"
+#include "core/TexturePrecomputation.h"
+#include "physically_based/PBRUtil.h"
 
 namespace fs = std::filesystem;
 
 namespace PBR::physically_based {
 
-namespace {
-
-// These are already in normalised device coordinate form
-constexpr size_t quadVerticesStride = 4 * sizeof(float);
-constexpr float quadVertices[] = {
-        // Position    // TexCoord
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
-        1.0f,  1.0f,  1.0f, 1.0f
-};
-
 /**
  * Precomputes the irradiance map of the background and returns it as a `Texture`.
  */
-std::shared_ptr<Texture> precomputeDiffuseIrradianceMap(std::shared_ptr<Texture> background)
+std::shared_ptr<Texture> precomputeIrradianceMap(std::shared_ptr<Texture> radianceMap)
 {
-    // Create and bind the buffer
-    unsigned int framebufferId;
-    glGenFramebuffers(1, &framebufferId);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebufferId);
-
-    // Create a texture that we're going to render to
-    std::shared_ptr<Texture> texture(new Texture());
-    glBindTexture(GL_TEXTURE_2D, texture->id());
-
-    // Allocate the memory for the texture (but don't worry about copying any data
-    // over, that'll happen when we render to it). We can use a low resolution because
-    // the data is going to be blurry anyway.
-    int width = 32;
-    int height = 32;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, NULL);
-    glViewport(0, 0, width, height);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Unbind the texture now that we have finished setting it up
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // Attach the texture to the framebuffer
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->id(), 0);
-
     // Load the shader program we need to use
     auto precomputeIrradianceMapVertexShader =
-            Util::getPhysicallyBasedShadersDirectory() / "precompute_irradiance_map.vert";
+            PBRUtil::pbrShadersDir() / "PrepVerticesForRenderingTexture.vert";
     auto precomputeIrradianceMapFragmentShader =
-            Util::getPhysicallyBasedShadersDirectory() / "precompute_irradiance_map.frag";
+            PBRUtil::pbrShadersDir() / "ComputeIrradianceMap.frag";
     ShaderProgram shader(precomputeIrradianceMapVertexShader, precomputeIrradianceMapFragmentShader);
 
-    /*
-     * It's still a shader, so we still need some data to send in. The vertex data
-     * defined above is in normalised device coordinates, which the vertex shader
-     * essentially just forwards to the fragment shader, which is where the interesting
-     * stuff happens.
-     *
-     * We still have to create buffers for the vertex data to send to the GPU. The difference
-     * is that we're only going to need it once (this is for precomputation rather than
-     * running once per frame), so we'll delete the buffers again as soon as the render
-     * is complete.
-     */
+    // Code to set up uniforms
+    auto prepareShaderUniforms = [&shader, radianceMap]() {
+        shader.resetUniforms();
+        shader.setUniform("radianceMap", radianceMap);
+    };
 
-    // Set up buffers for the vertex data we're going to send
-    unsigned int vaoId, vboId;
-    glGenVertexArrays(1, &vaoId);
-    glGenBuffers(1, &vboId);
+    // Allocate a texture for rendering
+    std::shared_ptr<Texture> texture(new Texture());
 
-    // Copy data into the buffers
-    glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-
-    // Set up the vertex attributes
-    glBindVertexArray(vaoId);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, quadVerticesStride, (void*) (0 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, quadVerticesStride, (void*) (2 * sizeof(float)));
-
-    // Set up the shader program
-    glUseProgram(shader.id());
-    shader.setUniform("backgroundTexture", background);
-
-    // Run the shader
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    // We're done so we can unbind and delete the data buffers
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    glDeleteBuffers(1, &vboId);
-    glDeleteVertexArrays(1, &vaoId);
-
-    // Unbind the framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Restore the screen dimensions (we don't need to worry about whether the window
-    // has been resized because this happens before the window is visible)
-    glViewport(0, 0, 800, 600);
-
-    // Delete the frame buffer now that the data is stored in the texture
-    glDeleteFramebuffers(1, &framebufferId);
+    // Render to the texture
+    int width = 16;
+    int height = 16;
+    TexturePrecomputation::renderToTexture(texture, shader, width, height, prepareShaderUniforms);
 
     return texture;
 }
 
-} // anonymous namespace
+/**
+ * Computes the prefiltered environment map and returns it as a `Texture`.
+ */
+std::shared_ptr<Texture> precomputePreFilteredEnvironmentMap(std::shared_ptr<Texture> radianceMap)
+{
+    // Load the shader program
+    auto vertexShaderPath = PBRUtil::pbrShadersDir() / "PrepVerticesForRenderingTexture.vert";
+    auto fragmentShaderPath = PBRUtil::pbrShadersDir() / "ComputePreFilteredEnvironmentMap.frag";
+    ShaderProgram shader(vertexShaderPath, fragmentShaderPath);
+
+    // Code to set up uniforms
+    constexpr unsigned int mipmapLevels = 5;
+    auto setUniforms = [&shader, radianceMap, mipmapLevels](auto mipmapLevel) {
+        float roughness = (float) mipmapLevel / (float) (mipmapLevels - 1);
+        shader.resetUniforms();
+        shader.setUniform("radianceMap", radianceMap);
+        shader.setUniform("roughness", roughness);
+    };
+
+    // Allocate a texture ready for rendering
+    std::shared_ptr<Texture> texture(new Texture());
+
+    // Render the texture
+    constexpr unsigned int maxWidth = 512;
+    constexpr unsigned int maxHeight = 512;
+    TexturePrecomputation::renderToMipmappedTexture(texture, shader, maxWidth, maxHeight, mipmapLevels, setUniforms);
+
+    return texture;
+}
 
 EnvironmentMap::EnvironmentMap(const fs::path& texturePath,
                                std::optional<DirectedLightSource> sun)
-        :backgroundTexture(new Texture(texturePath, true)),
-         diffuseIrradianceMap(precomputeDiffuseIrradianceMap(backgroundTexture)),
-         specularIrradianceMap(backgroundTexture), // TODO: Compute this properly
+        :radianceMap(new Texture(texturePath, true)),
+         irradianceMap(precomputeIrradianceMap(radianceMap)),
+         preFilteredEnvironmentMap(precomputePreFilteredEnvironmentMap(radianceMap)),
          sun(sun)
 {
 }
 
-std::shared_ptr<Texture> EnvironmentMap::getBackgroundTexture() const
+std::shared_ptr<Texture> EnvironmentMap::getRadianceMap() const
 {
-    return backgroundTexture;
+    return radianceMap;
 }
 
-std::shared_ptr<Texture> EnvironmentMap::getDiffuseIrradianceMapTexture() const
+std::shared_ptr<Texture> EnvironmentMap::getIrradianceMap() const
 {
-    return diffuseIrradianceMap;
+    return irradianceMap;
 }
 
-std::shared_ptr<Texture> EnvironmentMap::getSpecularIrradianceMapTexture() const
+std::shared_ptr<Texture> EnvironmentMap::getPreFilteredEnvironmentMap() const
 {
-    return specularIrradianceMap;
+    return preFilteredEnvironmentMap;
 }
 
 const std::optional<DirectedLightSource>& EnvironmentMap::getSun() const

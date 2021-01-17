@@ -5,9 +5,9 @@
 
 #include <GL/glew.h>
 
+#include "physically_based/PBRUtil.h"
 #include "physically_based/PhysicallyBasedScene.h"
 #include "physically_based/PhysicallyBasedShaderUniforms.h"
-#include "physically_based/Util.h"
 
 namespace fs = std::filesystem;
 
@@ -17,13 +17,13 @@ namespace {
 
 const fs::path& vertexShaderPath()
 {
-    static fs::path path = Util::getPhysicallyBasedShadersDirectory() / "physically_based.vert";
+    static fs::path path = PBRUtil::pbrShadersDir() / "PhysicallyBasedShader.vert";
     return path;
 }
 
 const fs::path& fragmentShaderPath()
 {
-    static fs::path path = Util::getPhysicallyBasedShadersDirectory() / "physically_based.frag";
+    static fs::path path = PBRUtil::pbrShadersDir() / "PhysicallyBasedShader.frag";
     return path;
 }
 
@@ -51,7 +51,10 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
     glUseProgram(shaderProgram.id());
 
     // Render each object in the scene
-    for (const auto& object : scene->getSceneObjectsList()) {
+    for (size_t i = 0; i < scene->getSceneObjectsList().size(); i++) {
+
+        const auto& object = scene->getSceneObjectsList()[i];
+        const auto& brdfIntegrationMap = scene->getBRDFIntegrationMaps()[i];
 
         // Write the uniforms to the shader
         PhysicallyBasedShaderUniforms uniforms{
@@ -64,8 +67,9 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
                 PhysicallyBasedDirectLightingInfo{scene->getLightPositions(), scene->getLightColours(),
                                                   scene->getLightIntensities()},
                 scene->getEnvironmentMap()->getSun(),
-                scene->getEnvironmentMap()->getDiffuseIrradianceMapTexture(),
-                scene->getEnvironmentMap()->getSpecularIrradianceMapTexture(),
+                scene->getEnvironmentMap()->getIrradianceMap(),
+                scene->getEnvironmentMap()->getPreFilteredEnvironmentMap(),
+                brdfIntegrationMap,
         };
         writeUniformsToShaderProgram(uniforms, shaderProgram);
 

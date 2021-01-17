@@ -11,6 +11,7 @@
 #include "core/SceneObject.h"
 #include "core/ShaderProgram.h"
 #include "core/Texture.h"
+#include "core/TexturePrecomputation.h"
 #include "core/VertexData.h"
 #include "core/Window.h"
 

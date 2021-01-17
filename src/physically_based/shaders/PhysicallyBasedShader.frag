@@ -40,8 +40,10 @@ uniform vec3 cameraPosition;
 uniform Material material;
 uniform DirectLightingInfo lightingInfo;
 uniform SunInfo sunInfo;
-uniform sampler2D diffuseIrradianceMap;
-uniform sampler2D specularIrradianceMap;
+
+uniform sampler2D irradianceMap;
+uniform sampler2D preFilteredEnvironmentMap;
+uniform sampler2D brdfIntegrationMap;
 
 out vec4 FragColour;
 
@@ -134,6 +136,12 @@ vec3 fresnel(vec3 h, vec3 v, vec3 F0)
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
 
+vec3 fresnelSchlickRoughness(vec3 h, vec3 v, vec3 F0, float roughness)
+{
+    float cosTheta = dot(h, v);
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
+}
+
 vec3 BRDF(vec3 p, vec3 wi, vec3 wo, vec3 n, vec3 F0)
 {
     // Compute h (halfway) vector
@@ -142,7 +150,7 @@ vec3 BRDF(vec3 p, vec3 wi, vec3 wo, vec3 n, vec3 F0)
     // Compute the three functions to determine the specular term
     float D = normalDistribution(n, h, material.roughness);
     float G = geometry(n, wo, wi, material.roughness);
-    vec3 F = fresnel(h, wo, F0);
+    vec3 F = fresnelSchlickRoughness(h, wo, F0, material.roughness);
 
     // Use F and the material's metallic level to work out the diffuse coefficient
     vec3 kS = F;
@@ -202,7 +210,7 @@ vec2 cubemapCoordsToUVs(vec3 cubemapCoords)
 
     // Corresponding texture location
     float u = 0.5 + phi / (2 * PI);
-    float v = 0.5 + theta / (2 * PI);
+    float v = 0.5 + theta / PI;
 
     return vec2(u, v);
 }
@@ -245,18 +253,27 @@ void main()
     // Add the contribution from the sun
     Lo += contributionFromSun(n, p, v, F0_corrected);
 
-    // Add the contribution from the diffuse irradiance map
-    vec2 uv = cubemapCoordsToUVs(n);
-    vec4 sampledDiffuse = texture(diffuseIrradianceMap, uv);
-    Lo += sampledDiffuse.rgb * material.albedo;
+    // Work out kD coefficient
+    vec3 F = fresnelSchlickRoughness(n, v, F0_corrected, material.roughness);
+    vec3 kD = (1.0 - F) * (1.0 - material.metallic);
 
-    // TODO: Do this properly!
-    // Get fake specular lighting by sampling the specular map
-    vec3 li = dot(v, n) * n - 2 * v;
-    uv = cubemapCoordsToUVs(li);
-    vec4 sampledSpecular = texture(specularIrradianceMap, uv);
-    // Uncomment/comment this to enable/disable fake specular lighting
-//    Lo += fresnel(n, v, F0_corrected) * sampledSpecular.rgb;
+    // Add the diffuse contribution from the irradiance map
+    vec2 uv = cubemapCoordsToUVs(n);
+    vec4 sampledDiffuse = texture(irradianceMap, uv);
+    Lo += kD * sampledDiffuse.rgb * material.albedo;
+
+    // Compute the incoming specular light direction
+    vec3 l = 2.0 * dot(v, n) * n - v;
+
+    // Sample the precomputed environment map and BRDF function
+    float lod = material.roughness * 4.0;
+    vec3 environmentMapComponent = textureLod(preFilteredEnvironmentMap, cubemapCoordsToUVs(l), lod).rgb;
+    vec4 brdfScaleAndBias = texture(brdfIntegrationMap, vec2(max(dot(v, n), 0.0), material.roughness));
+    float F0_scale = brdfScaleAndBias.x;
+    float F0_bias = brdfScaleAndBias.y;
+
+    // Work out the specular contribution
+    Lo += environmentMapComponent * (F0_scale * F + F0_bias);
 
     // Correct the output colour
     vec3 colour = toneMap(Lo);
