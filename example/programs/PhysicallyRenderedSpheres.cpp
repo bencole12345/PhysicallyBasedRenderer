@@ -16,22 +16,35 @@ std::shared_ptr<PhysicallyBasedScene> loadScene()
     fs::path objPath = std::filesystem::current_path() / "example" / "resources" / "models" / "SphereHighPoly.obj";
 
     std::vector<std::shared_ptr<PhysicallyBasedSceneObject>> sceneObjects;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            float x = -3.5f + (float) i * 7.0f / 3.0f;
-            float y = -3.5f + (float) j * 7.0f / 3.0f;
-            glm::vec3 position(x, y, 0.0f);
-            glm::vec3 orientation(0.0f);
-            float scale = 1.0f;
-            glm::vec3 albedo(0.8f, 0.8f, 0.8f);
-            float roughness = 0.8f - (float) j * 0.78f / 3.0f;
-            float metallic = (float) i / 3.0f;
-            glm::vec3 F0 = FresnelValues::Silver;
-            PhysicallyBasedMaterial material{albedo, roughness, metallic, F0};
-            std::shared_ptr<PhysicallyBasedSceneObject> object(
-                    new scene_objects::CustomObject(objPath, position, orientation, material, scale));
-            sceneObjects.push_back(std::move(object));
-        }
+//    for (int i = 0; i < 4; i++) {
+//        for (int j = 0; j < 4; j++) {
+//            float x = -3.5f + (float) i * 7.0f / 3.0f;
+//            float y = -3.5f + (float) j * 7.0f / 3.0f;
+//            glm::vec3 position(x, y, 0.0f);
+//            glm::vec3 orientation(0.0f);
+//            float scale = 1.0f;
+//            glm::vec3 albedo(0.8f, 0.8f, 0.8f);
+//            float roughness = 0.8f - (float) j * 0.78f / 3.0f;
+//            float metallic = (float) i / 3.0f;
+//            glm::vec3 F0 = FresnelValues::Silver;
+//            PhysicallyBasedMaterial material{albedo, roughness, metallic, F0};
+//            std::shared_ptr<PhysicallyBasedSceneObject> object(
+//                    new scene_objects::CustomObject(objPath, position, orientation, material, scale));
+//            sceneObjects.push_back(std::move(object));
+//        }
+//    }
+
+    for (int i = 0; i < 5; i++) {
+        glm::vec3 position(2.1f * i, 0.0f, 0.0f);
+        glm::vec3 orientation(0.0f);
+        float scale = 1.0f;
+        glm::vec3 albedo(0.8f);
+        float roughness = 0.9f * (float)(4-i) / 4.0f + 0.05f;
+        float metallic = 0.8f;
+        glm::vec3 F0 = FresnelValues::Silver;
+        PhysicallyBasedMaterial material{albedo, roughness, metallic, F0};
+        std::shared_ptr<PhysicallyBasedSceneObject> object(new scene_objects::CustomObject(objPath, position, orientation, material, scale));
+        sceneObjects.push_back(object);
     }
 
     // No additional point lights
