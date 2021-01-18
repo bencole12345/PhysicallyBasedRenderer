@@ -242,7 +242,7 @@ void main()
     // Base reflectivity: we have to correct for the fact that this only really
     // makes sense for non-metals. For metals, we instead use the material's
     // albedo as F0.
-    vec3 F0_corrected = mix(material.F0, material.albedo, material.metallic);
+    vec3 F0_corrected = mix(material.albedo, material.F0, material.metallic);
 
     // Add the contributions of all point light sources
     vec3 Lo = vec3(0.0);
