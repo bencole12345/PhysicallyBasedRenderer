@@ -7,7 +7,7 @@
 #include "core/Scene.h"
 #include "core/ShaderProgram.h"
 #include "phong/PhongScene.h"
-#include "skybox/SkyboxRenderer.h"
+#include "phong/SkyboxRenderer.h"
 
 namespace PBR::phong {
 
@@ -31,7 +31,7 @@ private:
     /**
      * Used for rendering skyboxes.
      */
-    skybox::SkyboxRenderer skyboxRenderer;
+    phong::SkyboxRenderer skyboxRenderer;
 
 public:
     PhongRenderer();

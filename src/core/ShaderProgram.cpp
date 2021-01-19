@@ -14,7 +14,7 @@
 
 #include "core/ErrorCodes.h"
 #include "core/Texture.h"
-#include "skybox/Skybox.h"
+#include "phong/Skybox.h"
 
 namespace fs = std::filesystem;
 
@@ -168,7 +168,7 @@ void ShaderProgram::setUniform(const std::string& name, const std::shared_ptr<Te
     setUniform(name, (int)textureUnit);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const std::shared_ptr<skybox::Skybox>& skybox)
+void ShaderProgram::setUniform(const std::string& name, const std::shared_ptr<phong::Skybox>& skybox)
 {
     unsigned int textureUnit = texturesCount++;
     glActiveTexture(GL_TEXTURE0 + textureUnit);

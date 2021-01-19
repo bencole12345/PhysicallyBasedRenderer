@@ -33,7 +33,7 @@ void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms,
 
     // BRDF component coefficient information
     shaderProgram.setUniform("dCoefficients.k_TrowbridgeReitzGGX", uniforms.ndfCoefficients.k_TrowbridgeReitzGGX);
-    shaderProgram.setUniform("dCoefficients.k_Beckmann", uniforms.ndfCoefficients.k_Beckman);
+    shaderProgram.setUniform("dCoefficients.k_Beckmann", uniforms.ndfCoefficients.k_Beckmann);
     shaderProgram.setUniform("gCoefficients.k_SchlickGGX", uniforms.geometryCoefficients.k_SchlickGGX);
     shaderProgram.setUniform("gCoefficients.k_CookTorrance", uniforms.geometryCoefficients.k_CookTorrance);
 

@@ -1,5 +1,6 @@
 #version 410
 
+
 struct NormalDistributionFunctionCoefficients {
     float k_TrowbridgeReitzGGX;
     float k_Beckmann;

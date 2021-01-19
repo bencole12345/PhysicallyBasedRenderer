@@ -97,7 +97,7 @@ std::shared_ptr<Texture> PhysicallyBasedScene::computePrefilteredEnvironmentMap(
         shader.setUniform("radianceMap", this->environmentMap->getRadianceMap());
         shader.setUniform("roughness", roughness);
         shader.setUniform("dCoefficients.k_TrowbridgeReitzGGX", material.brdfCoefficients.normalDistribution.k_TrowbridgeReitzGGX);
-        shader.setUniform("dCoefficients.k_Beckmann", material.brdfCoefficients.normalDistribution.k_Beckman);
+        shader.setUniform("dCoefficients.k_Beckmann", material.brdfCoefficients.normalDistribution.k_Beckmann);
         shader.setUniform("gCoefficients.k_SchlickGGX", material.brdfCoefficients.geometricAttenutation.k_SchlickGGX);
         shader.setUniform("gCoefficients.k_CookTorrance", material.brdfCoefficients.geometricAttenutation.k_CookTorrance);
     };
@@ -142,7 +142,7 @@ std::shared_ptr<Texture> PhysicallyBasedScene::computeBRDFIntegrationMap(const P
     auto prepareShaderUniforms = [material, &shaderProgram]() {
         shaderProgram.resetUniforms();
         shaderProgram.setUniform("dCoefficients.k_TrowbridgeReitzGGX", material.brdfCoefficients.normalDistribution.k_TrowbridgeReitzGGX);
-        shaderProgram.setUniform("dCoefficients.k_Beckmann", material.brdfCoefficients.normalDistribution.k_Beckman);
+        shaderProgram.setUniform("dCoefficients.k_Beckmann", material.brdfCoefficients.normalDistribution.k_Beckmann);
         shaderProgram.setUniform("gCoefficients.k_SchlickGGX", material.brdfCoefficients.geometricAttenutation.k_SchlickGGX);
         shaderProgram.setUniform("gCoefficients.k_CookTorrance", material.brdfCoefficients.geometricAttenutation.k_CookTorrance);
     };

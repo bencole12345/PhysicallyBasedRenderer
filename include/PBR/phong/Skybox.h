@@ -7,8 +7,11 @@
 #include "core/Camera.h"
 #include "core/ShaderProgram.h"
 
-namespace PBR::skybox {
+namespace PBR::phong {
 
+/**
+ * A skybox used by the Phong shading mode.
+ */
 class Skybox {
 private:
     unsigned int textureId;
@@ -63,6 +66,6 @@ constexpr size_t Skybox::numVerticesInBuffer() const
     return 36;
 }
 
-} // namespace PBR::skybox
+} // namespace PBR::phong
 
 #endif //PHYSICALLYBASEDRENDERER_SKYBOX

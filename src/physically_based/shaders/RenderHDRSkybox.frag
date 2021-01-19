@@ -1,5 +1,6 @@
 #version 410
 
+
 in vec3 TexCoords;
 
 uniform sampler2D SkyboxTexture;

@@ -23,13 +23,7 @@ struct PhysicallyBasedMaterial {
                                       GeometricAttenuationFunctionCoefficients{1.0f, 0.0f}};
 
     // Implemented so that we can hash it
-    bool operator==(const struct PhysicallyBasedMaterial& other) const
-    {
-        return this->albedo == other.albedo
-                && this->roughness == other.roughness
-                && this->metallic == other.metallic
-                && this->F0 == other.F0;
-    }
+    bool operator==(const struct PhysicallyBasedMaterial& other) const;
 };
 
 } // namespace PBR::physically_based

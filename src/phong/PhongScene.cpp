@@ -4,6 +4,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "phong/Skybox.h"
+
 namespace PBR::phong {
 
 PhongScene::PhongScene(std::vector<std::shared_ptr<PhongSceneObject>> sceneObjects, glm::vec3 ambientLight,
@@ -13,7 +15,7 @@ PhongScene::PhongScene(std::vector<std::shared_ptr<PhongSceneObject>> sceneObjec
 }
 
 PhongScene::PhongScene(std::vector<std::shared_ptr<PhongSceneObject>> sceneObjects, glm::vec3 ambientLight,
-                       std::vector<PointLightSource> lights, std::shared_ptr<skybox::Skybox> skybox)
+                       std::vector<PointLightSource> lights, std::shared_ptr<Skybox> skybox)
         :Scene(std::move(sceneObjects), std::move(lights)), ambientLight(ambientLight), skybox(skybox)
 {
 }
@@ -28,7 +30,7 @@ bool PhongScene::hasSkybox() const
     return skybox.has_value();
 }
 
-const std::shared_ptr<skybox::Skybox>& PhongScene::getSkybox() const
+const std::shared_ptr<phong::Skybox>& PhongScene::getSkybox() const
 {
     return skybox.value();
 }

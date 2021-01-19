@@ -80,7 +80,7 @@ std::shared_ptr<PhongScene> loadScene()
             oceanWithMountains / "front.jpg",
             oceanWithMountains / "back.jpg"
     };
-    std::shared_ptr<skybox::Skybox> skybox(new skybox::Skybox(skyboxTextures));
+    std::shared_ptr<phong::Skybox> skybox(new phong::Skybox(skyboxTextures));
 
     // Create the scene
     return std::make_shared<PhongScene>(sceneObjects,

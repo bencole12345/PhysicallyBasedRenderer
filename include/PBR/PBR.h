@@ -5,6 +5,5 @@
 #include "phong.h"
 #include "physically_based.h"
 #include "scene_objects.h"
-#include "skybox.h"
 
 #endif //PHYSICALLYBASEDRENDERER_PBR

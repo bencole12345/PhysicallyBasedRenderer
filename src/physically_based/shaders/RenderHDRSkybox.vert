@@ -1,11 +1,13 @@
 #version 410
 
+
 layout (location = 0) in vec3 VertexPos;
 
 uniform mat4 Projection;
 uniform mat4 View;
 
 out vec3 TexCoords;
+
 
 void main()
 {

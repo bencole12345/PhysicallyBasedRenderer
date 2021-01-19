@@ -8,7 +8,9 @@ namespace PBR::physically_based {
  */
 struct NormalDistributionFunctionCoefficients {
     float k_TrowbridgeReitzGGX;
-    float k_Beckman;
+    float k_Beckmann;
+
+    bool operator==(const struct NormalDistributionFunctionCoefficients& other) const;
 };
 
 /**
@@ -17,6 +19,8 @@ struct NormalDistributionFunctionCoefficients {
 struct GeometricAttenuationFunctionCoefficients {
     float k_SchlickGGX;
     float k_CookTorrance;
+
+    bool operator==(const struct GeometricAttenuationFunctionCoefficients& other) const;
 };
 
 /**
@@ -25,6 +29,8 @@ struct GeometricAttenuationFunctionCoefficients {
 struct BRDFCoefficients {
     NormalDistributionFunctionCoefficients normalDistribution;
     GeometricAttenuationFunctionCoefficients geometricAttenutation;
+
+    bool operator==(const struct BRDFCoefficients& other) const;
 };
 
 } // namespace PBR::physically_based

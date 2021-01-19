@@ -5,10 +5,13 @@
 
 #include "core/Camera.h"
 #include "core/ShaderProgram.h"
-#include "skybox/Skybox.h"
+#include "Skybox.h"
 
-namespace PBR::skybox {
+namespace PBR::phong {
 
+/**
+ * Renders a `Skybox` to the active framebuffer.
+ */
 class SkyboxRenderer {
 private:
     /**
@@ -28,6 +31,6 @@ public:
     void renderSkybox(const std::shared_ptr<Skybox>& skybox, const Camera& camera);
 };
 
-} // namespace PBR::skybox
+} // namespace PBR::phong
 
 #endif //PHYSICALLYBASEDRENDERER_SKYBOXRENDERER

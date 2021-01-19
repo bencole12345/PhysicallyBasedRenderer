@@ -7,7 +7,6 @@
 #include <glm/vec3.hpp>
 
 #include "core/PointLightSource.h"
-#include "skybox/Skybox.h"
 
 namespace PBR {
 

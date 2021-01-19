@@ -1,4 +1,4 @@
-#include "skybox/Skybox.h"
+#include "phong/Skybox.h"
 
 #include <filesystem>
 #include <iostream>
@@ -69,7 +69,7 @@ constexpr float skyboxCubeVertices[] = {
 
 } // anonymous namespace
 
-namespace PBR::skybox {
+namespace PBR::phong {
 
 Skybox::Skybox(const std::vector<fs::path>& faceTextures)
         :textureId(), vaoId(), vboId()
@@ -131,4 +131,4 @@ Skybox::~Skybox()
     glDeleteVertexArrays(1, &vaoId);
 }
 
-} // namespace PBR::skybox
+} // namespace PBR::phong

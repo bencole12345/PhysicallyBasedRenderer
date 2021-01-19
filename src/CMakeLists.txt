@@ -27,6 +27,8 @@ add_library(PBR
         phong/PhongScene.cpp
         phong/PhongSceneObject.cpp
         phong/PhongShaderUniforms.cpp
+        phong/Skybox.cpp
+        phong/SkyboxRenderer.cpp
         physically_based/BRDFCoefficients.cpp
         physically_based/EnvironmentMap.cpp
         physically_based/EnvironmentMapRenderer.cpp
@@ -41,8 +43,6 @@ add_library(PBR
         scene_objects/CustomObject.cpp
         scene_objects/Plane.cpp
         scene_objects/Shapes.cpp
-        skybox/Skybox.cpp
-        skybox/SkyboxRenderer.cpp
         ${HEADER_LIST})
 
 target_compile_features(PBR PRIVATE cxx_std_17)

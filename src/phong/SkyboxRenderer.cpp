@@ -1,4 +1,4 @@
-#include "skybox/SkyboxRenderer.h"
+#include "phong/SkyboxRenderer.h"
 
 #include <memory>
 #include <string>
@@ -7,16 +7,16 @@
 #include <GL/glew.h>
 
 #include "core/Camera.h"
-#include "skybox/Skybox.h"
+#include "phong/Skybox.h"
 
 namespace {
 
-constexpr std::string_view SKYBOX_VERTEX_SHADER = "src/skybox/shaders/skybox.vert";
-constexpr std::string_view SKYBOX_FRAGMENT_SHADER = "src/skybox/shaders/skybox.frag";
+constexpr std::string_view SKYBOX_VERTEX_SHADER = "src/phong/shaders/skybox.vert";
+constexpr std::string_view SKYBOX_FRAGMENT_SHADER = "src/phong/shaders/skybox.frag";
 
 } // anonymous namespace
 
-namespace PBR::skybox {
+namespace PBR::phong {
 
 SkyboxRenderer::SkyboxRenderer()
     : shaderProgram(SKYBOX_VERTEX_SHADER, SKYBOX_FRAGMENT_SHADER)
@@ -60,4 +60,4 @@ void SkyboxRenderer::renderSkybox(const std::shared_ptr<Skybox>& skybox, const P
     glCullFace(oldCullFace);
 }
 
-} // namespace PBR::skybox
+} // namespace PBR::phong

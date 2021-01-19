@@ -6,5 +6,7 @@
 #include "phong/PhongScene.h"
 #include "phong/PhongSceneObject.h"
 #include "phong/PhongShaderUniforms.h"
+#include "phong/Skybox.h"
+#include "phong/SkyboxRenderer.h"
 
 #endif //PHYSICALLYBASEDRENDERER_PHONG

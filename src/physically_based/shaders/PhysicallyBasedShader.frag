@@ -2,6 +2,7 @@
 
 #define MAX_LIGHTS 16
 
+
 /**
  * Contains the parameters needed to describe a material in this physically
  * based framework.

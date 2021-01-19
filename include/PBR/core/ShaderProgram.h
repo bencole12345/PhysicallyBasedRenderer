@@ -15,7 +15,7 @@
 namespace PBR {
 
 // Forward-declared to avoid circular dependency
-namespace skybox { class Skybox; }
+namespace phong { class Skybox; }
 
 /**
  * Wraps a shader program containing a vertex and fragment shader.
@@ -56,7 +56,7 @@ public:
     void setUniform(const std::string& name, const std::vector<float>& values);
     void setUniform(const std::string& name, const std::vector<glm::vec3>& values);
     void setUniform(const std::string& name, const std::shared_ptr<Texture>& texture);
-    void setUniform(const std::string& name, const std::shared_ptr<skybox::Skybox>& skybox);
+    void setUniform(const std::string& name, const std::shared_ptr<phong::Skybox>& skybox);
 
 };
 

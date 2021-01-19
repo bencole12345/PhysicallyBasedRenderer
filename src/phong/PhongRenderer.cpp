@@ -13,8 +13,8 @@
 #include "core/ShaderProgram.h"
 #include "phong/PhongScene.h"
 #include "phong/PhongShaderUniforms.h"
-#include "skybox/Skybox.h"
-#include "skybox/SkyboxRenderer.h"
+#include "phong/Skybox.h"
+#include "phong/SkyboxRenderer.h"
 
 namespace {
 
