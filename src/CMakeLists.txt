@@ -27,6 +27,7 @@ add_library(PBR
         phong/PhongScene.cpp
         phong/PhongSceneObject.cpp
         phong/PhongShaderUniforms.cpp
+        physically_based/BRDFCoefficients.cpp
         physically_based/EnvironmentMap.cpp
         physically_based/EnvironmentMapRenderer.cpp
         physically_based/FresnelValues.cpp

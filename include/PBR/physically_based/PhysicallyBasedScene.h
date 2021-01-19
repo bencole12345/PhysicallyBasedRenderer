@@ -23,6 +23,12 @@ private:
     std::shared_ptr<EnvironmentMap> environmentMap;
 
     /**
+     * The prefiltered environment maps. These are specific to each object, since
+     * each object may have a different BRDF configuration.
+     */
+    std::vector<std::shared_ptr<Texture>> prefilteredEnvironmentMaps;
+
+    /**
      * The precomputed BRDF functions for each material used in the scene. Element
      * i of this vector corresponds to the ith object in the scene.
      */
@@ -34,10 +40,29 @@ public:
 
     std::shared_ptr<EnvironmentMap> getEnvironmentMap() const;
 
+    const std::vector<std::shared_ptr<Texture>>& getPrefilteredEnvironmentMaps() const;
+
     const std::vector<std::shared_ptr<Texture>>& getBRDFIntegrationMaps() const;
 
 private:
+    /**
+     * Generates the prefiltered environment map for all objects.
+     */
+    void precomputePrefilteredEnvironmentMaps();
+
+    /**
+     * Generates the prefiltered environment map for a given material.
+     */
+    std::shared_ptr<Texture> computePrefilteredEnvironmentMap(const PhysicallyBasedMaterial& material);
+
+    /**
+     * Precomputes the BRDF integration map for each object in the scene.
+     */
     void precomputeBRDFIntegrationMaps();
+
+    /**
+     * Precomputes the BRDF integration map for a particular material.
+     */
     std::shared_ptr<Texture> computeBRDFIntegrationMap(const PhysicallyBasedMaterial& material);
 };
 

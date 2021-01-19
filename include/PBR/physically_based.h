@@ -1,6 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_PHYSICALLY_BASED
 #define PHYSICALLYBASEDRENDERER_PHYSICALLY_BASED
 
+#include "physically_based/BRDFCoefficients.h"
 #include "physically_based/EnvironmentMap.h"
 #include "physically_based/EnvironmentMapRenderer.h"
 #include "physically_based/FresnelValues.h"

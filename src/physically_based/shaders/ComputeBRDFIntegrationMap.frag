@@ -1,69 +1,128 @@
 #version 410
 
+struct NormalDistributionFunctionCoefficients {
+    float k_TrowbridgeReitzGGX;
+    float k_Beckmann;
+};
+
+struct GeometricAttenuationFunctionCoefficients {
+    float k_SchlickGGX;
+    float k_CookTorrance;
+};
+
 
 in vec2 TexCoords;
+
+uniform NormalDistributionFunctionCoefficients dCoefficients;
+uniform GeometricAttenuationFunctionCoefficients gCoefficients;
 
 out vec4 FragColour;
 
 
-#define PI 3.14159
+#define PI 3.1415926535
 #define EPSILON 0.000001
 
 // Number of samples to use
 #define N 512
 
 
-/**
- * Maps roughness values to alpha values.
- */
-float alpha(float roughness)
-{
-    return roughness;
-}
+// ----- NORMAL DISTRIBUTION FUNCTION ---------------------------------------------------
 
 /**
- * A normal distribution function for computing how normals are spread.
+ * The Trowbridge-Reitz GGX normal distribution function.
  *
- * This implementation uses the GGX model.
+ * Adapted from LearnOpenGL book.
  */
-float normalDistribution(vec3 n, vec3 h, float roughness)
+float D_TrowbridgeReitzGGX(vec3 n, vec3 h, float roughness)
 {
-    float a = alpha(roughness);
-    float k = a * a / 2.0f; // use the mapping for IBL rather than direct
+    float alpha = roughness * roughness;  // Square roughness for direct lighting
+    float n_dot_h = max(dot(n, h), 0.0);
 
     // Compute the formula
-    float numerator = a * a;
-    float n_dot_h = dot(n, h);
-    float denominatorInner = (n_dot_h * n_dot_h * (a * a - 1.0) + 1.0);
-    float denominatorFull = PI * denominatorInner * denominatorInner;
+    float numerator = alpha * alpha;
+    float denominator = PI * pow((n_dot_h * n_dot_h * (alpha * alpha - 1.0) + 1.0), 2);
 
-    // Make sure we don't accidentally divide by zero
-    float denominator = max(denominatorFull, EPSILON);
-
-    return numerator / denominator;
+    return numerator / max(denominator, EPSILON);
 }
+
+/**
+ * The Beckmann normal distribution function.
+ *
+ * Implementation adapted from: https://www.jordanstevenstechart.com/physically-based-rendering
+ */
+float D_Beckmann(vec3 n, vec3 h, float roughness)
+{
+    float alpha = roughness * roughness;  // Square roughness for direct lighting
+    float n_dot_h = dot(n, h);
+    return max(EPSILON, (1.0 / (PI * alpha * pow(n_dot_h, 4)))
+    * exp((pow(n_dot_h, 2) - 1)/(alpha * pow(n_dot_h, 2))));
+}
+
+/**
+ * The interface to the normal distribution function.
+ *
+ * This mixes the different implementations according to the values in
+ * gCoefficients.
+ */
+float D(vec3 n, vec3 h, float roughness)
+{
+    return dCoefficients.k_TrowbridgeReitzGGX * D_TrowbridgeReitzGGX(n, h, roughness)
+    + dCoefficients.k_Beckmann * D_Beckmann(n, h, roughness);
+}
+
+// ----- GEOMETRIC ATTENUATION FUNCTION -------------------------------------------------
 
 /**
  * A geometry function for computing self-shadowing of microfaceted surfaces.
  *
  * Note that this function only computes the self-shadowing factor in one
  * direction.
+ *
+ * Adapted from implementation in LearnOpenGL book.
  */
-float G_SchlickGGX(vec3 n, vec3 v, float k)
+float G_SchlickGGX(vec3 n, vec3 wo, float k)
 {
-    return dot(n, v) / (dot(n, v) * (1.0 - k) + k);
+    return dot(n, wo) / (dot(n, wo) * (1 - k) + k);
 }
 
 /**
- * A full geometry function for microfacet self-shadowing that factors in
- * self-shadowing both from the light source and to the viewer.
+ * Schlick GGX geometry function using Schlick's method.
+ *
+ * Adapted from LearnOpenGL book.
  */
-float geometry(vec3 n, vec3 v, vec3 l, float roughness)
+float G_Smith_SchlickGGX(vec3 n, vec3 wo, vec3 wi, float roughness)
 {
-    float a = alpha(roughness);
-    float k = a * a / 2.0f;  // formula for image-based mapping
-    return G_SchlickGGX(n, v, k) * G_SchlickGGX(n, l, k);
+    float alpha = roughness * roughness;
+    float k = (alpha + 1.0) * (alpha + 1.0) / 8.0;  // Formula for direct lighting
+    return G_SchlickGGX(n, wo, k) * G_SchlickGGX(n, wi, k);
 }
+
+/**
+ * The Cook-Torrance geometry function.
+ *
+ * Implemented using the formula from the original paper.
+ */
+float G_CookTorrance(vec3 n, vec3 wo, vec3 wi)
+{
+    vec3 h = normalize(wo + wi);
+    float first = 2.0 * dot(n, h) * dot(n, wo) / dot(wo, h);
+    float second = 2.0 * dot(n, h) * dot(n, wi) / dot(wo, h);
+    return min(min(first, second), 1.0);
+}
+
+/**
+ * The interface to the geometric attenuation function.
+ *
+ * This mixes the different implementations according to the values in
+ * gCoefficients.
+ */
+float G(vec3 n, vec3 wo, vec3 wi, float roughness)
+{
+    return gCoefficients.k_SchlickGGX * G_Smith_SchlickGGX(n, wo, wi, roughness)
+         + gCoefficients.k_CookTorrance * G_CookTorrance(n, wo, wi);
+}
+
+// ----- IMPORTANCE SAMPLING ------------------------------------------------------------
 
 /**
  * Given an integer `bits` written in fixed-point binary decimal notation,
@@ -101,19 +160,22 @@ vec2 hammersley2D(uint i, uint N_total)
 }
 
 /**
- * Important sample the hemisphere according to the GGX probability density
+ * Importance sample the hemisphere according to the GGX probability density
  * function.
  *
- * The output will be in spherical coordinates.
+ * This uses the mapping described in the original GGX paper, "Microfacet Models
+ * for Refraction through Rough Surfaces". The output will be in spherical coordinates.
  */
 vec2 importanceSampleHemisphere(vec2 uv, float roughness)
 {
     float u = uv.x;
     float v = uv.y;
-    float a = alpha(roughness);
+    float a = roughness;  // Roughness directly scales the distribution
 
+    // See paper for explanation. This is derived from the CDF of the GGX
+    // probability distribution.
     float phi = 2.0 * PI * u;
-    float theta = atan((a * sqrt(v)), sqrt(1 - v)); // From the paper
+    float theta = atan((a * sqrt(v)), sqrt(1 - v));
 
     // Correct for the fact that I've been using theta as "up" from the XZ
     // tangent plane, but this gives it in "down" from the +Y axis.
@@ -124,16 +186,21 @@ vec2 importanceSampleHemisphere(vec2 uv, float roughness)
 
 void main()
 {
+    // These are just how the lookup function is indexed.
     float n_dot_w0 = TexCoords.x;
     float roughness = TexCoords.y;
 
-    // We work in tangent space, meaning that (arbitrary decision) the X and Z axes
+    // We work in tangent space, meaning that (arbitrary decision:) the X and Z axes
     // are considered tangential to the surface while the Y axis is parallel to the
-    // local normal.
+    // local normal. However, unlike other times in this application where we sample
+    // the hemisphere, we never actually need to map into world coordinates here, since
+    // the BRDF integration map is determined entirely by the BRDF in use, not by
+    // the environment map. Hence, it's the same regardless of which environment map
+    // and orientation you choose.
 
     // First work out out an appropriate view vector to use, using the arbitrary
     // decision that phi=0 in world space
-    vec3 v = vec3(0, n_dot_w0, sin(acos(n_dot_w0)));
+    vec3 wo = vec3(0, n_dot_w0, sin(acos(n_dot_w0)));
 
     // We also assume that the normal is (0, 1, 0)
     vec3 n = vec3(0.0, 1.0, 0.0);
@@ -168,19 +235,21 @@ void main()
         // let's renormalise just to be safe.
         h = normalize(h);
 
-        // Reflect v in h to get l.
-        vec3 l = normalize(2 * dot(v, h) * h - v);
+        // Reflect wo in h to get wi.
+        vec3 wi = normalize(2 * dot(wo, h) * h - wo);
 
         // Ignore any values that can't contribute any light
-        if (dot(n, l) <= 0)
+        if (dot(n, wi) <= 0)
             continue;
 
-        // We now have everything we need to sample the BDRF
-        float G = (geometry(n, v, l, roughness) * dot(v, h)) / (dot(n, h) * dot(n, v));
-        float schlick = pow(1.0 - dot(v, h), 5.0);
+        // We now have everything we need to sample the BDRF. This hefty formula is
+        // just an implementation of equation 8 in Epic Games' paper.
+        // See: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+        float commonPart = (G(n, wo, wi, roughness) * dot(wo, h)) / (dot(n, h) * dot(n, wo));
+        float schlickPart = pow(1.0 - dot(wo, h), 5.0);
 
-        scale += G * (1.0 - schlick);
-        bias += G * schlick;
+        scale += commonPart * (1.0 - schlickPart);
+        bias += commonPart * schlickPart;
     }
 
     FragColour = vec4(scale/N, bias/N, 0.0, 1.0);

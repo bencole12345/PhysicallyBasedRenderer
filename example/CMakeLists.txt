@@ -9,3 +9,6 @@ target_link_libraries(ObjectLoading PRIVATE PBR)
 
 add_executable(PhysicallyRenderedSpheres programs/PhysicallyRenderedSpheres.cpp)
 target_link_libraries(PhysicallyRenderedSpheres PRIVATE PBR)
+
+add_executable(SpheresDifferentBRDFs programs/SpheresDifferentBRDFs.cpp)
+target_link_libraries(SpheresDifferentBRDFs PRIVATE PBR)

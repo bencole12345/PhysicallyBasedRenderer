@@ -3,6 +3,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "physically_based/BRDFCoefficients.h"
+
 namespace PBR::physically_based {
 
 /**
@@ -13,6 +15,12 @@ struct PhysicallyBasedMaterial {
     float roughness;
     float metallic;
     glm::vec3 F0;
+
+    /**
+     * Coefficients used when a custom BRDF is used.
+     */
+    BRDFCoefficients brdfCoefficients{NormalDistributionFunctionCoefficients{1.0f, 0.0f},
+                                      GeometricAttenuationFunctionCoefficients{1.0f, 0.0f}};
 
     // Implemented so that we can hash it
     bool operator==(const struct PhysicallyBasedMaterial& other) const

@@ -31,6 +31,12 @@ void writeUniformsToShaderProgram(const PhysicallyBasedShaderUniforms& uniforms,
     shaderProgram.setUniform("lightingInfo.lightColours", uniforms.lightingInfo.lightColours);
     shaderProgram.setUniform("lightingInfo.intensities", uniforms.lightingInfo.intensities);
 
+    // BRDF component coefficient information
+    shaderProgram.setUniform("dCoefficients.k_TrowbridgeReitzGGX", uniforms.ndfCoefficients.k_TrowbridgeReitzGGX);
+    shaderProgram.setUniform("dCoefficients.k_Beckmann", uniforms.ndfCoefficients.k_Beckman);
+    shaderProgram.setUniform("gCoefficients.k_SchlickGGX", uniforms.geometryCoefficients.k_SchlickGGX);
+    shaderProgram.setUniform("gCoefficients.k_CookTorrance", uniforms.geometryCoefficients.k_CookTorrance);
+
     // Lighting maps
     shaderProgram.setUniform("irradianceMap", uniforms.irradianceMap);
     shaderProgram.setUniform("preFilteredEnvironmentMap", uniforms.preFilteredEnvironmentMap);

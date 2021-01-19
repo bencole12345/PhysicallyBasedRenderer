@@ -29,13 +29,6 @@ private:
     std::shared_ptr<Texture> irradianceMap;
 
     /**
-     * The irradiance map for specular lighting.
-     *
-     * This is the integral of Li(p, wi) precomputed for each hemisphere.
-     */
-    std::shared_ptr<Texture> preFilteredEnvironmentMap;
-
-    /**
      * The sun's light source, if it exists.
      */
     std::optional<DirectedLightSource> sun;
@@ -47,8 +40,6 @@ public:
     std::shared_ptr<Texture> getRadianceMap() const;
 
     std::shared_ptr<Texture> getIrradianceMap() const;
-
-    std::shared_ptr<Texture> getPreFilteredEnvironmentMap() const;
 
     const std::optional<DirectedLightSource>& getSun() const;
 };

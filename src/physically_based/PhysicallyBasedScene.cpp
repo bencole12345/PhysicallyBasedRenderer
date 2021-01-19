@@ -41,8 +41,10 @@ PhysicallyBasedScene::PhysicallyBasedScene(std::vector<std::shared_ptr<Physicall
                                            std::shared_ptr<EnvironmentMap> environmentMap)
         :Scene<PhysicallyBasedSceneObject>(std::move(sceneObjects), std::move(lights), glm::vec3(0.0f)),
          environmentMap(environmentMap),
+         prefilteredEnvironmentMaps(),
          brdfIntegrationMaps()
 {
+    precomputePrefilteredEnvironmentMaps();
     precomputeBRDFIntegrationMaps();
 }
 
@@ -51,9 +53,64 @@ std::shared_ptr<EnvironmentMap> PhysicallyBasedScene::getEnvironmentMap() const
     return environmentMap;
 }
 
+const std::vector<std::shared_ptr<Texture>>& PhysicallyBasedScene::getPrefilteredEnvironmentMaps() const
+{
+    return prefilteredEnvironmentMaps;
+}
+
 const std::vector<std::shared_ptr<Texture>>& PhysicallyBasedScene::getBRDFIntegrationMaps() const
 {
     return brdfIntegrationMaps;
+}
+
+void PhysicallyBasedScene::precomputePrefilteredEnvironmentMaps()
+{
+    std::unordered_map<PhysicallyBasedMaterial, std::shared_ptr<Texture>, PhysicallyBasedMaterialHasher> prefilteredCache;
+    prefilteredEnvironmentMaps.clear();
+    for (const auto& object : getSceneObjectsList()) {
+        auto it = prefilteredCache.find(object->material);
+        if (it == prefilteredCache.end()) {
+            // Not found, need to compute it and add it to the cache
+            std::shared_ptr<Texture> prefilteredEnvironmentMap = computePrefilteredEnvironmentMap(object->material);
+            prefilteredEnvironmentMaps.push_back(prefilteredEnvironmentMap);
+            prefilteredCache.insert(std::make_pair(object->material, prefilteredEnvironmentMap));
+        }
+        else {
+            // Found, use the one we computed already
+            prefilteredEnvironmentMaps.push_back(it->second);
+        }
+    }
+}
+
+std::shared_ptr<Texture> PhysicallyBasedScene::computePrefilteredEnvironmentMap(const PhysicallyBasedMaterial& material)
+{
+    // Load the shader program
+    auto vertexShaderPath = PBRUtil::pbrShadersDir() / "PrepVerticesForRenderingTexture.vert";
+    auto fragmentShaderPath = PBRUtil::pbrShadersDir() / "ComputePreFilteredEnvironmentMap.frag";
+    ShaderProgram shader(vertexShaderPath, fragmentShaderPath);
+
+    // Code to set up uniforms
+    constexpr unsigned int mipmapLevels = 5;
+    auto setUniforms = [this, &shader, mipmapLevels, material](auto mipmapLevel) {
+        float roughness = (float) mipmapLevel / (float) (mipmapLevels - 1);
+        shader.resetUniforms();
+        shader.setUniform("radianceMap", this->environmentMap->getRadianceMap());
+        shader.setUniform("roughness", roughness);
+        shader.setUniform("dCoefficients.k_TrowbridgeReitzGGX", material.brdfCoefficients.normalDistribution.k_TrowbridgeReitzGGX);
+        shader.setUniform("dCoefficients.k_Beckmann", material.brdfCoefficients.normalDistribution.k_Beckman);
+        shader.setUniform("gCoefficients.k_SchlickGGX", material.brdfCoefficients.geometricAttenutation.k_SchlickGGX);
+        shader.setUniform("gCoefficients.k_CookTorrance", material.brdfCoefficients.geometricAttenutation.k_CookTorrance);
+    };
+
+    // Allocate a texture ready for rendering
+    std::shared_ptr<Texture> texture(new Texture());
+
+    // Render the texture
+    constexpr unsigned int maxWidth = 512;
+    constexpr unsigned int maxHeight = 512;
+    TexturePrecomputation::renderToMipmappedTexture(texture, shader, maxWidth, maxHeight, mipmapLevels, setUniforms);
+
+    return texture;
 }
 
 void PhysicallyBasedScene::precomputeBRDFIntegrationMaps()
@@ -81,8 +138,14 @@ std::shared_ptr<Texture> PhysicallyBasedScene::computeBRDFIntegrationMap(const P
     auto fragmentShader = PBRUtil::pbrShadersDir() / "ComputeBRDFIntegrationMap.frag";
     ShaderProgram shaderProgram(vertexShader, fragmentShader);
 
-    // The shader program doesn't use any uniforms
-    auto prepareShaderUniforms = []() { };
+    // Function for setting up shader uniforms
+    auto prepareShaderUniforms = [material, &shaderProgram]() {
+        shaderProgram.resetUniforms();
+        shaderProgram.setUniform("dCoefficients.k_TrowbridgeReitzGGX", material.brdfCoefficients.normalDistribution.k_TrowbridgeReitzGGX);
+        shaderProgram.setUniform("dCoefficients.k_Beckmann", material.brdfCoefficients.normalDistribution.k_Beckman);
+        shaderProgram.setUniform("gCoefficients.k_SchlickGGX", material.brdfCoefficients.geometricAttenutation.k_SchlickGGX);
+        shaderProgram.setUniform("gCoefficients.k_CookTorrance", material.brdfCoefficients.geometricAttenutation.k_CookTorrance);
+    };
 
     std::shared_ptr<Texture> texture(new Texture());
     unsigned int width = 512, height = 512;

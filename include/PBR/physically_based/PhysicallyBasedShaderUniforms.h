@@ -11,6 +11,7 @@
 #include "core/DirectedLightSource.h"
 #include "core/ShaderProgram.h"
 #include "core/Texture.h"
+#include "physically_based/BRDFCoefficients.h"
 #include "physically_based/PhysicallyBasedMaterial.h"
 
 namespace PBR::physically_based {
@@ -36,6 +37,10 @@ struct PhysicallyBasedShaderUniforms {
     // Lighting information
     PhysicallyBasedDirectLightingInfo lightingInfo;
     std::optional<DirectedLightSource> sun;
+
+    // Distribution coefficients;
+    NormalDistributionFunctionCoefficients ndfCoefficients;
+    GeometricAttenuationFunctionCoefficients geometryCoefficients;
 
     // Lighting maps
     std::shared_ptr<Texture> irradianceMap;

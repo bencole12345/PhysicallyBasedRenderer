@@ -7,7 +7,7 @@ uniform sampler2D radianceMap;
 out vec4 FragColour;
 
 
-#define PI 3.14159
+#define PI 3.1415926535
 
 // Number of alpha values to choose
 #define N_ALPHA 30
@@ -69,14 +69,18 @@ void main()
      * to the unit sphere, while e_r is the normal.
      *
      * Then, I sample UNIFORMLY from the hemisphere by first varying an angle
-     * alpha from 0 to pi/2: this is the angle away from e_r. Then, in the inner
-     * loop I vary an angle beta from 0 to 2pi rotating around the e_r axis. The
+     * alpha from 0 to pi/2 -- this is the angle away from e_r -- then, in the inner
+     * loop varying an angle beta from 0 to 2pi rotating around the e_r axis. The
      * bigger the value of alpha, the more beta values we need to maintain the
      * property that we're sampling uniformly. If you used the same number of beta
      * values for all alpha values then you'd collect unfairly many samples for
      * small values of alpha. The alternative to choosing a varying number of beta
      * angles would to use a constant number of beta angles but scale each by
      * sin(alpha).
+     *
+     * (Yes, I could have used cosinal importance sampling here. I did it this way
+     * because I implemented it this way first, and I'm satisfied with the results.
+     * I also invented this method myself, sadly unlike cosinal importance sampling!)
      */
 
     // Compute the basis vectors e_phi, e_theta, e_r in Cartesian coordinates.
@@ -93,11 +97,13 @@ void main()
         // Alpha is the angle between the normal and the point we're currently sampling
         float alpha = float(i)/(N_ALPHA-1) * PI / 2.0;
 
+        // Setting J = 4*i would be "fairer" here, but then you don't get a single sample
+        // at the pole, which is the strongest contributor of all. It's a trade-off.
         int J = 4*i + 1;
         for (int j = 0; j < J; j++) {
 
             // Beta is the angle around the e_r axis.
-            float beta = float(j)/(J-1) * 2.0 * PI;
+            float beta = float(j)/J * 2.0 * PI;
 
             // Use beta to rotate around e_r to get the point on the unit circle on
             // the plane spanned by e_phi and e_theta.

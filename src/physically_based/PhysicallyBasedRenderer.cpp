@@ -54,6 +54,7 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
     for (size_t i = 0; i < scene->getSceneObjectsList().size(); i++) {
 
         const auto& object = scene->getSceneObjectsList()[i];
+        const auto& prefilteredEnvironmentMap = scene->getPrefilteredEnvironmentMaps()[i];
         const auto& brdfIntegrationMap = scene->getBRDFIntegrationMaps()[i];
 
         // Write the uniforms to the shader
@@ -67,8 +68,10 @@ void PhysicallyBasedRenderer::render(std::shared_ptr<PhysicallyBasedScene> scene
                 PhysicallyBasedDirectLightingInfo{scene->getLightPositions(), scene->getLightColours(),
                                                   scene->getLightIntensities()},
                 scene->getEnvironmentMap()->getSun(),
+                object->material.brdfCoefficients.normalDistribution,
+                object->material.brdfCoefficients.geometricAttenutation,
                 scene->getEnvironmentMap()->getIrradianceMap(),
-                scene->getEnvironmentMap()->getPreFilteredEnvironmentMap(),
+                prefilteredEnvironmentMap,
                 brdfIntegrationMap,
         };
         writeUniformsToShaderProgram(uniforms, shaderProgram);
