@@ -2,6 +2,8 @@
 
 A physically-based renderer I'm working on, using C++ and OpenGL. The renderer has two modes of operation: Phong rendering and physically based rendering, which attempts to model materials and light using physically-accurate properties.
 
+If you want to learn more about how it works, read [the paper](Paper.pdf)!
+
 ## Screenshots
 ![Physically Rendered Bunnies](screenshots/physically_rendered_bunnies.png "Copper, silver and plastic physically-rendered bunnies")
 
