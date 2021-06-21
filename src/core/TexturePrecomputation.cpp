@@ -1,5 +1,6 @@
 #include "core/TexturePrecomputation.h"
 
+#include <functional>
 #include <memory>
 
 #include <GL/glew.h>

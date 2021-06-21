@@ -1,6 +1,7 @@
 #ifndef PHYSICALLYBASEDRENDERER_TEXTUREPRECOMPUTATION
 #define PHYSICALLYBASEDRENDERER_TEXTUREPRECOMPUTATION
 
+#include <functional>
 #include <memory>
 
 #include "core/ShaderProgram.h"
